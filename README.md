@@ -24,8 +24,6 @@ Want to see Futbolia in action? Check out our Figma design for a sneak peek of o
 
 ## Contributions and Feedback
 
-We welcome contributions from the open-source community to make Futbolia even better. Whether you're a developer, designer, or sports enthusiast, there are many ways to get involved. Feel free to fork this repository, submit pull requests, or share your feedback and suggestions through the issue tracker.
-
 Join us on the journey to redefine the sports experience! Futbolia is where sports, technology, and community converge.
 
 [Visit Futbolia Website](insert-website-link-here)
