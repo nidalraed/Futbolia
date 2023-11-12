@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
 function BestSalary({ onAddToCart, onAddToWishlist }) {
   const [products, setProducts] = useState([]);
@@ -9,7 +10,6 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
   const [heartCount, setHeartCount] = useState(0);
 
   useEffect(() => {
-    // Fetch data from the server when the component mounts
     axios.get('http://localhost:3010/product')
       .then(response => {
         setProducts(response.data);
@@ -21,10 +21,7 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
   }, []);
 
   const handleAddToCart = (product) => {
-    // Callback to inform the parent component (e.g., App.js) that a product is added to the cart
     onAddToCart(product);
-
-    // Show a notification that the product has been added to the cart
     toast.success('Product added to cart!', {
       position: 'top-center',
       autoClose: 2000,
@@ -36,13 +33,8 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
   };
 
   const handleAddToWishlist = (product) => {
-    // Callback to inform the parent component (e.g., App.js) that a product is added to the wishlist
     onAddToWishlist(product);
-
-    // Increment heart count in the header
     setHeartCount(heartCount + 1);
-
-    // Show a notification that the product has been added to the wishlist
     toast.success('Product added to wishlist!', {
       position: 'top-center',
       autoClose: 2000,
@@ -88,11 +80,11 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
                     </svg>
                   </button>
                 </div>
-                <a>
+                <Link to={`/product/${product.id}`}>
                   <h3 className="px-5 mb-4 text-lg font-bold dark:text-white">
                     {product.title}
                   </h3>
-                </a>
+                </Link>
                 <div className="flex">
                   <div className="w-1/2 px-5 pb-3">
                     <p className="text-lg font-bold text-emerald-600 dark:text-emerald-300">

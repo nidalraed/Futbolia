@@ -8,25 +8,25 @@ import Header from './Component/Header';
 import SignUp from './Users/Signup';
 import Store from './Component/Store';
 import Playgrounds from './Component/Playgrounds';
+import ProductDetails from './HomeStore/ProductDetails';
 
 function App() {
   return (
     <div className="App">
-          <div className="App">
       <Router>
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/playgrounds" element={<Playgrounds/>} />
+          <Route path="/playgrounds" element={<Playgrounds />} />
+          {/* Use the "element" prop instead of "component" for JSX rendering */}
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/store" element={<Store />} />
         </Routes>
-        <br></br>
+        <br />
         <Footer />
       </Router>
-    </div>
-
     </div>
   );
 }

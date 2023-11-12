@@ -4,8 +4,8 @@ import '../App.css';
 
 function Herof() {
   return (
-    <div className='h-[50vh]'>
-      <div className="relative min-h-screen flex items-center justify-center z-[-2]">
+    <div className='h-screen'>
+      <div className="relative min-h-[60vh] flex items-center justify-center z-[-2]">
         <video
           className="w-full h-full object-cover absolute top-0 left-0"
           autoPlay

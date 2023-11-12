@@ -275,5 +275,7 @@
       "originalPrice": 399.99,
       "buttonText": "Add To Cart"
     }
-  ]
+  ],
+  "ProductDetails":[{
+  }]
 }
