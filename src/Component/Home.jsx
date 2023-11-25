@@ -7,6 +7,7 @@ import Stor from '../Home/Stor'
 import Wstor from '../Home/Wstor'
 import CardAcademy from '../Home/CardAcademy'
 import Wacademy from '../Home/Wacademy'
+import Addtoregister from '../Home/Addtoregister'
 
 
 
@@ -25,6 +26,7 @@ function Home() {
       <Wacademy/>
       <br></br>
       <CardAcademy/>
+      <Addtoregister/>
      
 
 

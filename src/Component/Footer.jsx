@@ -1,4 +1,6 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
+
 
 function Footer() {
   return (
@@ -20,7 +22,7 @@ function Footer() {
           <ul>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -29,7 +31,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -38,7 +40,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -47,7 +49,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -69,7 +71,7 @@ function Footer() {
           <ul>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -78,7 +80,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -87,7 +89,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -96,7 +98,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -105,7 +107,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -126,13 +128,12 @@ function Footer() {
           </h3>
           <ul>
             <li className="mb-2 leading-6">
-              <a
-                href="#"
+              <Link
+                to="/aboutus"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
-                {" "}
-                About us{" "}
-              </a>
+                About us
+              </Link>
             </li>
             <li className="mb-2 leading-6">
               <a
@@ -145,7 +146,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -154,7 +155,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -163,7 +164,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -184,17 +185,17 @@ function Footer() {
           </h3>
           <ul>
             <li className="mb-2 leading-6">
-              <a
-                href="#"
+              <Link
+                to='/contactus'
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
-                {" "}
-                Contact{" "}
-              </a>
+               
+                Contact
+              </Link>
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -203,7 +204,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -212,7 +213,7 @@ function Footer() {
             </li>
             <li className="mb-2 leading-6">
               <a
-                href="#"
+                href="/"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
@@ -229,7 +230,7 @@ function Footer() {
     <div className="container px-6 mx-auto">
       <div className="grid grid-cols-4 gap-6 md:grid-cols-8 lg:grid-cols-12">
         <div className="col-span-2 md:col-span-4 lg:col-span-6">
-          Copyright 2022 Brand
+          Copyright 2023 Footboolia
         </div>
         <nav
           aria-labelledby="footer-social-links"
