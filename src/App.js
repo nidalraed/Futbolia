@@ -23,6 +23,7 @@ import Category from '../src/HomeStore/Category';
 import CategoryPage from '../src/HomeStore/CategoryPage';
 import ContactUs from './Component/ContactUs';
 import AboutUs1 from './Component/AboutUs1';
+import Done from './Home/Done';
 
 function App({ catalogs }) {
   return (
@@ -48,11 +49,9 @@ function App({ catalogs }) {
           <Route path="/store" element={<Store />} />
           <Route path="/category" element={<Category />} />
           <Route path="/category/:categorySlug" element={<CategoryPage catalogs={catalogs} />} />
-          <Route path="/dashboard" element={<HomeD />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/Aboutus" element={<AboutUs1 />} />
-
-
+          <Route path="/done" element={<Done />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
         <Footer />

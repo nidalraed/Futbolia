@@ -35,7 +35,7 @@ const Header1 = ({ cartCount, heartCount }) => {
     navigate('/search', { state: { searchTerm, searchResults } });
   };
   return (
-    <div className='mt-36 fixed inset-x-0 top-0 z-50 '>
+    <div className='mt-32 fixed inset-x-0 top-0 z-50 '>
       <header className="bg-white shadow">
         <nav className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
