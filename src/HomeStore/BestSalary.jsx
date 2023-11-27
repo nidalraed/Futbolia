@@ -67,8 +67,6 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
                   <button
                     onClick={() => {
                       handleAddToWishlist(product);
-                      // هنا يمكننا إضافة المنتج إلى عربة التسوق
-                      onAddToCart(product);
                     }}
                     className="absolute top-0 left-0 p-3 bg-emerald-500 rounded-l-none hover:bg-emerald-600 rounded-t-xl "
                   >
