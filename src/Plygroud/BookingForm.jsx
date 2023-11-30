@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const BookingForm = () => {
   const navigate = useNavigate();
@@ -10,10 +11,11 @@ const BookingForm = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
-    date: '',
-    startTime: '',
-    endTime: '',
-    notice: '',
+    booking_date: '',
+    start_time: '',
+    end_time: '',
+    note: '',
+    payment_method: '',
   });
 
   const handleChange = (e) => {
@@ -23,12 +25,39 @@ const BookingForm = () => {
     });
   };
 
+  const fetchUserData = () => {
+    let token = Cookies.get('authToken');
+
+    if (!token) {
+      // If token is not found in cookies, check localStorage
+      token = localStorage.getItem('isLoggedIn');
+    }
+
+    if (!token) {
+      console.error('Token not found. User not authenticated.');
+      // Handle authentication failure (redirect to login, show error, etc.)
+      return null;
+    }
+
+    return token;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const token = fetchUserData();
+
+    if (!token) {
+      return; // Exit the function if there's no token
+    }
+
     try {
-      const response = await axios.post('http://localhost:3010/formbooking', {
-        formbooking: [formData],
+      const response = await axios.post('http://localhost:2000/book-stadium', {
+        formData,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log(response);
@@ -82,14 +111,14 @@ const BookingForm = () => {
             </label>
             <input
               type="text"
-              name="fullName"
+              name="full_name"
               id="fullName"
               placeholder="Full Name"
               className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-emerald-500 outline-none focus:border-emerald-500 focus:shadow-md"
               onChange={handleChange}
             />
           </div>
-       {/* ... (other form fields) ... */}
+       
 <div className="mb-5">
 
   <label
@@ -116,7 +145,7 @@ const BookingForm = () => {
   </label>
   <input
     type="date"
-    name="date"
+    name="booking_date"
     id="date"
     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-emerald-500 outline-none focus:border-emerald-500 focus:shadow-md"
     onChange={handleChange}
@@ -133,7 +162,7 @@ const BookingForm = () => {
       </label>
       <input
         type="time"
-        name="startTime"
+        name="start_time"
         id="startTime"
         className="w-full rounded-md border border-emerald-500 bg-white py-3 px-6 text-base font-medium text-emerald-500 outline-none focus:border-emerald-500 focus:shadow-md"
         onChange={handleChange}
@@ -150,7 +179,7 @@ const BookingForm = () => {
       </label>
       <input
         type="time"
-        name="endTime"
+        name="end_time"
         id="endTime"
         className="w-full rounded-md border border-emerald-500 bg-white py-3 px-6 text-base font-medium text-emerald-500 outline-none focus:border-emerald-500 focus:shadow-md"
         onChange={handleChange}
@@ -166,7 +195,7 @@ const BookingForm = () => {
     Notice
   </label>
   <textarea
-    name="notice"
+    name="note"
     id="notice"
     placeholder="Any additional notes or requests?"
     className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-emerald-500 outline-none focus:border-emerald-500 focus:shadow-md"

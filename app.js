@@ -10,6 +10,8 @@ const app = express();
 const secretKey = 'your_secret_key';
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.json());
+
 
 const pool = new Pool({
   user: 'postgres',
@@ -22,17 +24,15 @@ const pool = new Pool({
 // Move the storage definition above the multer middleware creation
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'C:/Users/Orange/Desktop/masterpiece/pic');
+    cb(null, 'C:/Users/Orange/Desktop/Futbolia/src/images');
   },
   filename: function (req, file, cb) {
-    // تحديد اسم الملف
     cb(null, file.originalname);
   },
 });
 
 const upload = multer({ storage: storage });
 ///////////////////////////////////////////// USERS ///////////////////////////////////////////////////////////
-// تسجيل الدخول
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -42,81 +42,98 @@ app.post('/login', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
     const user = result.rows[0];
-
-    // تحقق من صحة كلمة المرور باستخدام bcrypt
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    const token = jwt.sign({ user_id: user.user_id, email: user.email, user_role: user.user_role, full_name:user.full_name }, secretKey, { expiresIn: '10d' });
-
+    const token = jwt.sign({ user_id: user.user_id, email: user.email, user_role: user.user_role }, secretKey, { expiresIn: '10d' });
     res.json({ token });
   } catch (error) {
     console.error('Error executing query', error);
     res.status(500).json({ message: 'Internal server error' });
-
-
-    
   }
 });
 
-
-
-
-// تسجيل مستخدم جديد
 app.post('/register', async (req, res) => {
-    const { full_name, email, password } = req.body;
-    const user_role = 3; // تحديد الدور بشكل ثابت كـ user
+    const { full_name, email, password, phone } = req.body;
+    const user_role = 3; 
   
     try {
-      // التحقق مما إذا كان البريد الإلكتروني مسجل من قبل
       const emailExists = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-  
       if (emailExists.rows.length > 0) {
         return res.status(400).json({ message: 'Email already exists' });
       }
   
-      // تشفير كلمة المرور باستخدام bcrypt
       const hashedPassword = await bcrypt.hash(password, 10);
   
-      // إذا لم يكن البريد الإلكتروني مسجل من قبل، قم بإجراء الإدراج
-      const result = await pool.query('INSERT INTO users (full_name, email, password, user_role, is_deleted) VALUES ($1, $2, $3, $4,  false) RETURNING *', [full_name, email, hashedPassword,  user_role]);
-  
-      res.status(200).json({ message: 'User registered successfully' });
+      const result = await pool.query('INSERT INTO users (full_name, email, password, phone, user_role, is_deleted) VALUES ($1, $2, $3, $4, $5, false) RETURNING *', [full_name, email, hashedPassword, phone, user_role]);
+
+      res.json({ message: 'User registered successfully' });
     } catch (error) {
       console.error('Error executing query', error);
+
       res.status(500).json({ message: 'Internal server error' });
     }
   });
 
+app.get('/puser', authenticateToken, async (req, res) => {
+  const { user_id } = req.user;
 
-  // تحديث معلومات المستخدم (PUT /update-user)
+  try {
+    const userResult = await pool.query('SELECT * FROM users WHERE user_id = $1 AND is_deleted = false', [user_id]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User profile retrieved successfully', user: userResult.rows[0] });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+// إضافة صورة إلى مستخدم باستخدام Multer
+app.post('/upload-upic', authenticateToken, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'لم يتم تحميل ملف.' });
+    }
+
+    const imageData = req.file.filename; 
+
+    const updateResult = await pool.query('UPDATE users SET pic_user = $1 WHERE user_id = $2 RETURNING *', [imageData, req.user.user_id]);
+
+    if (updateResult.rows.length === 0) {
+      return res.status(500).json({ message: 'فشل في تحديث صورة المستخدم.' });
+    }
+
+    res.json({ message: 'تمت إضافة صورة المستخدم بنجاح', user: updateResult.rows[0] });
+  } catch (error) {
+    console.error('حدث خطأ أثناء تنفيذ الاستعلام', error);
+    res.status(500).json({ message: 'خطأ في الخادم الداخلي' });
+  }
+});
 app.put('/update-user', authenticateToken, async (req, res) => {
-    const { user_id, full_name, email, phone } = req.body;
-  
-    try {
-      // التحقق من وجود المستخدم
-      const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1 AND is_deleted = false', [user_id]);
-  
-      if (userExists.rows.length === 0) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // تحديث معلومات المستخدم
-      const result = await pool.query('UPDATE users SET full_name = $1, email = $2, phone = $3 WHERE user_id = $4 RETURNING *', [full_name, email, phone, user_id]);
-  
-      res.json({ message: 'User updated successfully', user: result.rows[0] });
-    } catch (error) {
-      console.error('Error executing query', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+  const { full_name, email } = req.body;
+  const { user_id } = req.user; 
 
-  
+  try {
+    const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1 AND is_deleted = false', [user_id]);
+
+    if (userExists.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const result = await pool.query('UPDATE users SET full_name = $1, email = $2 WHERE user_id = $3 RETURNING *', [full_name, email, user_id]);
+
+    res.json({ message: 'User updated successfully', user: result.rows[0] });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 // Soft Delete للمستخدم
 app.delete('/delete-user', authenticateToken, async (req, res) => {
@@ -139,13 +156,18 @@ app.delete('/delete-user', authenticateToken, async (req, res) => {
 // Middleware للتحقق من التوكن
 function authenticateToken(req, res, next) {
   const token = req.header('Authorization') && req.header('Authorization').replace('Bearer ', '');
-
+console.log(token);
   if (!token) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
   try {
     const decoded = jwt.verify(token, secretKey);
+
+    if (decoded.is_deleted) {
+      return res.status(401).json({ message: 'User account has been deleted' });
+    }
+
     req.user = decoded;
     next();
   } catch (error) {
@@ -153,7 +175,11 @@ function authenticateToken(req, res, next) {
   }
 }
 
-
+// Logout
+app.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json({ message: 'Logout successful' });
+});
 /////////////////////////////////////////// ADMIN////////////////////////////////////////////////////////
 // تسجيل مستخدم جديد للأدمن
 app.post('/register-admin', async (req, res) => {
@@ -167,10 +193,8 @@ app.post('/register-admin', async (req, res) => {
         return res.status(400).json({ message: 'Email already exists' });
       }
   
-      // تشفير كلمة المرور باستخدام bcrypt
       const hashedPassword = await bcrypt.hash(password, 10);
   
-      // إضافة المستخدم إلى جدول اليوزر وتحديد رقم الرول إلى 1
       const result = await pool.query('INSERT INTO users (full_name, email, password, phone, user_role, is_deleted) VALUES ($1, $2, $3, $4, $5, false) RETURNING *', [full_name, email, hashedPassword, phone, 1]);
   
       res.json({ message: 'Admin registered successfully', admin: result.rows[0] });
@@ -179,7 +203,7 @@ app.post('/register-admin', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
-  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // تسجيل دخول الأدمن
   app.post('/admin-login', async (req, res) => {
     const { email, password } = req.body;
@@ -221,7 +245,6 @@ app.post('/register-admin', async (req, res) => {
     }
   });
   
-  // الموافقة أو الرفض على طلب ملعب
  // الموافقة أو الرفض على طلب ملعب
 app.put('/approve-stadium-request/:stadium_id', authenticateAdminToken, async (req, res) => {
     const { stadium_id } = req.params;
@@ -284,22 +307,6 @@ app.put('/approve-stadium-request/:stadium_id', authenticateAdminToken, async (r
     }
   });
   
-// Middleware للتحقق من التوكن
-function authenticateToken(req, res, next) {
-    const token = req.header('Authorization');
-  
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-  
-    try {
-      const decoded = jwt.verify(token, secretKey);
-      req.user = decoded;
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-  }
   
 // Middleware للتحقق من توكن الأدمن
 function authenticateAdminToken(req, res, next) {
@@ -327,75 +334,86 @@ function authenticateAdminToken(req, res, next) {
   ///////////////////////////////////////////STAD/////////////////////////////////////////////////////////////////
   
 // إضافة ملعب جديد
-app.post('/add-stadium', authenticateToken, async (req, res) => {
-    const { name, city, location, size, hourly_rate, description, images_url } = req.body;
-    const { user_id } = req.user;
-  
-    try {
-      // إضافة الطلب إلى جدول الملاعب مع حالة الموافقة محددة كـ 'pending'
-      const result = await pool.query(
-        'INSERT INTO stadiums (name, city, location, size, hourly_rate, description, owner_id, approval_status, images_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-        [name, city, location, size, hourly_rate, description, user_id, 'pending', images_url]
-      );
-  
-      res.json({ message: 'Stadium request added successfully', stadium: result.rows[0] });
-    } catch (error) {
-      console.error('Error executing query', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
-  
 
-  
-  // موافقة أو رفض طلب ملعب
-  app.put('/respond-to-stadium-request/:stadium_id', authenticateAdminToken, async (req, res) => {
-    const { stadium_id } = req.params;
-    const { approval_status } = req.body;
-  
-    try {
-      // تحديث حالة الموافقة
-      const result = await pool.query('UPDATE stadiums SET approval_status = $1 WHERE stadium_id = $2 RETURNING *', [approval_status, stadium_id]);
-  
-      if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'Stadium not found' });
-      }
-  
-      res.json({ message: 'Stadium request updated successfully', stadium: result.rows[0] });
-    } catch (error) {
-      console.error('Error executing query', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
+// app.post('/add-stadium', authenticateToken, async (req, res) => {
+//   const { name, city, location, size, hourly_rate, description, phone, start_time, end_time } = req.body;
+//   const { user_id } = req.user;
 
-  ////////////////////////////////////////// BOOKING ////////////////////////////////////////////////////////////
-// حجز الملعب
-app.post('/book-stadium', authenticateToken, async (req, res) => {
-  const { stadium_id, start_time, end_time, booking_date } = req.body;
+//   try {
+//     const result = await pool.query(
+//       'INSERT INTO stadiums (name, city, location, size, hourly_rate, description, owner_id, approval_status, phone, start_time, end_time, delet) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, false) RETURNING *',
+//       [name, city, location, size, hourly_rate, description, user_id, 'pending', phone, start_time, end_time]
+
+//     );
+
+//     return res.status(201).json({ message: 'Stadium request added successfully', stadium: result.rows[0] });
+//   } catch (error) {
+//     console.error('Error executing query', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// });
+
+
+app.post('/add-stadium', authenticateToken, upload.array('images', 5), async (req, res) => {
+  const { name, city, location, size, hourly_rate, description, phone, start_time, end_time } = req.body;
   const { user_id } = req.user;
 
   try {
-    // التحقق من توفر الملعب والتحقق من عدم وجود تعارض في الحجز
-    const conflictCheck = await pool.query(
-      'SELECT * FROM bookings WHERE stadium_id = $1 AND booking_date = $2 AND ((start_time >= $3 AND start_time < $4) OR (end_time > $3 AND end_time <= $4))',
-      [stadium_id, booking_date, start_time, end_time]
-    );
-
-    if (conflictCheck.rows.length > 0) {
-      return res.status(400).json({ message: 'Stadium is already booked during this period' });
-    }
-
-    // قم بإضافة الحجز
     const result = await pool.query(
-      'INSERT INTO bookings (stadium_id, user_id, start_time, end_time, booking_date) VALUES ($1, $2, $3::time, $4::time, $5) RETURNING *',
-      [stadium_id, user_id, start_time, end_time, booking_date]
+      'INSERT INTO stadiums (name, city, location, size, hourly_rate, description, owner_id, approval_status, phone, start_time, end_time, delet) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, false) RETURNING *',
+      [name, city, location, size, hourly_rate, description, user_id, 'pending', phone, start_time, end_time]
     );
 
-    res.json({ message: 'Stadium booked successfully', booking: result.rows[0] });
+    // تعديل اسم الحقل إلى اسم الحقل الذي يخزن روابط الصور في قاعدة البيانات
+    const images_url = req.files.map((file) => `/images_url/${file.filename}`);
+
+    // أدخل روابط الصور في جدول البيانات أو افعل ما تراه مناسبًا
+    // قد تحتاج إلى تعديل هذا بناءً على هيكل جدول البيانات الخاص بك
+    // يُفضل تخزين روابط الصور في جدول مستقل وربطها بسجل الاستاد باستخدام مفتاح خارجي
+    // قم بتحديث هذا الجزء وفقًا لتكوين قاعدة البيانات الخاصة بك
+
+    return res.status(201).json({ message: 'Stadium request added successfully', stadium: result.rows[0], images_url });
   } catch (error) {
     console.error('Error executing query', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
+
+
+
+
+
+  ////////////////////////////////////////// BOOKING ////////////////////////////////////////////////////////////
+  app.post('/book-stadium', authenticateToken, async (req, res) => {
+    const { stadium_id, start_time, end_time, booking_date,note,phone} = req.body.formData;
+    const { user_id } = req.user;
+    console.log(req.body.formData);
+  
+    try {
+      // التحقق من توفر الملعب والتحقق من عدم وجود تعارض في الحجز
+      const conflictCheck = await pool.query(
+        'SELECT * FROM bookings WHERE stadium_id = $1 AND booking_date = $2 AND ((start_time >= $3 AND start_time < $4) OR (end_time > $3 AND end_time <= $4))',
+        [stadium_id, booking_date, start_time, end_time]
+      );
+  
+      if (conflictCheck.rows.length > 0) {
+        return res.status(400).json({ message: 'Stadium is already booked during this period' });
+      }
+  
+      // قم بإضافة الحجز
+      const result = await pool.query(
+        'INSERT INTO bookings (stadium_id, user_id, start_time, end_time, booking_date,note,phone) VALUES ($1, $2, $3::time, $4::time, $5,$6,$7) RETURNING *',
+        [stadium_id, user_id, start_time, end_time, booking_date,note,phone]
+      );
+  
+      res.json({ message: 'Stadium booked successfully', booking: result.rows[0] });
+    } catch (error) {
+      console.error('Error executing query', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   // تمديد حجز الملعب
@@ -422,7 +440,27 @@ app.post('/book-stadium', authenticateToken, async (req, res) => {
   });
   
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// إضافة صورة إلى مستخدم باستخدام Multer
+app.post('/upload-upic', authenticateToken, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'لم يتم تحميل ملف.' });
+    }
 
+    const imageData = req.file.filename; 
+
+    const updateResult = await pool.query('UPDATE users SET pic_user = $1 WHERE user_id = $2 RETURNING *', [imageData, req.user.user_id]);
+
+    if (updateResult.rows.length === 0) {
+      return res.status(500).json({ message: 'فشل في تحديث صورة المستخدم.' });
+    }
+
+    res.json({ message: 'تمت إضافة صورة المستخدم بنجاح', user: updateResult.rows[0] });
+  } catch (error) {
+    console.error('حدث خطأ أثناء تنفيذ الاستعلام', error);
+    res.status(500).json({ message: 'خطأ في الخادم الداخلي' });
+  }
+});
 // استرجاع بيانات المستخدم وحجوزاته
 app.get('/user-profile', authenticateToken, async (req, res) => {
   const { user_id } = req.user;
@@ -449,24 +487,22 @@ app.get('/user-profile', authenticateToken, async (req, res) => {
 
 // تحديث بيانات المستخدم
 app.put('/update-user', authenticateToken, async (req, res) => {
-  const { user_id } = req.user;
   const { full_name, email, phone } = req.body;
+  const { user_id } = req.user; 
 
   try {
-      // التحقق من وجود المستخدم
-      const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1 AND is_deleted = false', [user_id]);
+    const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1 AND is_deleted = false', [user_id]);
 
-      if (userExists.rows.length === 0) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    if (userExists.rows.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-      // تحديث بيانات المستخدم
-      const result = await pool.query('UPDATE users SET full_name = $1, email = $2, phone = $3 WHERE user_id = $4 RETURNING *', [full_name, email, phone, user_id]);
+    const result = await pool.query('UPDATE users SET full_name = $1, email = $2, phone = $3 WHERE user_id = $4 RETURNING *', [full_name, email, phone, user_id]);
 
-      res.json({ message: 'User profile updated successfully', user: result.rows[0] });
+    res.json({ message: 'User updated successfully', user: result.rows[0] });
   } catch (error) {
-      console.error('Error executing query', error);
-      res.status(500).json({ message: 'Internal server error' });
+    console.error('Error executing query', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 /////////////////////////// add comment & rete ////////////////////////////////////////////////////////////

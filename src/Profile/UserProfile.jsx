@@ -1,77 +1,140 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Profile = () => {
   const [userId, setUserId] = useState(1);
   const [full_name, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [formbookingData, setFormBookingData] = useState([]);
   const [wishlistData, setWishlistData] = useState([]);
-
-  const [userData, setUserData] = useState({
-    image: '',
-  });
-  const [newUserData, setNewUserData] = useState({
-    full_name: '',
-    email: '',
-    phone: ''
-  });
+  const [userData, setUserData] = useState({ image: '' });
+  const [newUserData, setNewUserData] = useState({ full_name: '', email: '' });
   const [userImage, setUserImage] = useState('');
   const [activeTab, setActiveTab] = useState('EditProfile');
-  
 
+  
   const fetchUserData = () => {
-    axios.get(`http://localhost:2000/user-profile/${userId}`)
+    let token = Cookies.get('authToken');
+  
+    if (!token) {
+      // If token is not found in cookies, check localStorage
+      token = localStorage.getItem('authToken');
+    }
+  
+    if (!token) {
+      console.error('Token not found. User not authenticated.');
+      // Handle authentication failure (redirect to login, show error, etc.)
+      return;
+    }
+  
+    axios.get('http://localhost:2000/user-profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
-        setUserData(response.data);
-        setFullName(response.data.full_name);
-        setEmail(response.data.email);
-        setPhone(response.data.phone);
+        setUserData(response.data.user);
+        setFullName(response.data.user.full_name);
+        setEmail(response.data.user.email);
         setNewUserData({
-          full_name: response.data.full_name,
-          email: response.data.email,
-          phone: response.data.phone
+          full_name: response.data.user.full_name,
+          email: response.data.user.email,
         });
-        setUserImage(`http://localhost:3010/users/${response.data.image}`);
+        // setUserImage(`http://localhost:3010/upload-upic/${response.data.user.image}`);
+           setUserImage(`http://localhost:3010/upload-upic/${response.data.user.image}`);
+
       })
       .catch(error => {
         console.error('Error fetching user data: ', error);
       });
   };
-
-  const handleSaveDataChanges = () => {
-    console.log('New User Data:', newUserData);
   
-    axios.put(`http://localhost:2000/user-profile/${userId}`, newUserData)
-      .then(response => {
-        alert('Data changes saved successfully');
-        console.log('Response data:', response.data);
-      })
-      .catch(error => {
-        console.error('Error saving data changes: ', error);
+  
+  
+
+  const handleSaveDataChanges = async () => {
+    try {
+      console.log('New User Data:', newUserData);
+  
+      let token = Cookies.get('authToken') || localStorage.getItem('authToken');
+  
+      if (!token) {
+        console.error('Token not found. User not authenticated.');
+        // Handle authentication failure (e.g., redirect to login, show error message, etc.)
+        return;
+      }
+  
+      // Show loading indicator here
+  
+      const response = await axios.put(`http://localhost:2000/update-user`, newUserData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+  
+      // Hide loading indicator here
+  
+      // Display a success message and log the response data
+      alert('Changes saved successfully');
+      console.log('Response data:', response.data);
+  
+      // Redirect or update UI as needed
+    } catch (error) {
+      console.error('Error saving changes: ', error);
+  
+      if (error.response) {
+        // Handle server response errors
+        console.error('Server responded with non-success status:', error.response.status);
+        console.error('Response data:', error.response.data);
+        // Show user-friendly error message based on the response
+      } else if (error.request) {
+        // Handle cases where the request was made but no response was received
+        console.error('No response received from the server');
+        // Show user-friendly error message
+      } else {
+        // Handle other request setup errors
+        console.error('Error during request setup:', error.message);
+        // Show user-friendly error message
+      }
+  
+      // Hide loading indicator here (if it was shown)
+    }
   };
+  
+ 
 
-  const handleSaveImageChanges = () => {
-    console.log('New User Image:', newUserData.image);
+
   
-    const formData = new FormData();
-    formData.append('image', newUserData.image);
   
-    axios.put(`http://localhost:3010/users/${userId}/upload-image`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-      .then(response => {
-        console.log('Image changes saved successfully', response.data);
-      })
-      .catch((error) => {
-        console.error('Error saving image changes: ', error);
+
+  const handleSaveImageChanges = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('image', newUserData.image);
+  
+      const token = Cookies.get('authToken') || localStorage.getItem('authToken');
+      if (!token) {
+        console.error('Token not found. User not authenticated.');
+        // Handle authentication failure (e.g., redirect to login, show error message, etc.)
+        return;
+      }
+  
+      await axios.post(`http://localhost:2000/upload-upic`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       });
-  };
 
+      // Display a success message
+      alert('Image changes saved successfully');
+    } catch (error) {
+      console.error('Error saving image changes: ', error);
+      // Handle error (display error message, etc.)
+    }
+  };
+  
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
       const selectedImage = e.target.files[0];
@@ -82,6 +145,7 @@ const Profile = () => {
       setUserImage(URL.createObjectURL(selectedImage));
     }
   };
+  
 
   useEffect(() => {
     fetchUserData();
@@ -89,7 +153,7 @@ const Profile = () => {
 
   useEffect(() => {
     // جلب البيانات وتحديث formbookingData
-    axios.get('http://localhost:3010/formbooking')
+    axios.get('http://localhost:2000/user-profile')
       .then(response => {
         setFormBookingData(response.data);
       })
@@ -110,20 +174,25 @@ const Profile = () => {
   }, []); 
 
   return (
-    <div>
-      <div className="sm mt-20">
-      <div className="text-center p-4">
-  <img
-    src={userImage || "https://i.pinimg.com/280x280_RS/39/d4/77/39d47758fc973887b276f5464df10d53.jpg"}
-    className="h-32 w-32 rounded-full mx-auto"
-  />
-  <div className="mt-4">
-    <span className="font-medium text-gray-900">{full_name}</span><br />
-    <span className="text-gray-500">{email}</span><br />
-    <span className="text-gray-500">{phone}</span>
-  </div>
-</div>
-</div>
+      <div>
+        <div className="sm mt-24 bg-emerald-500 h-52 w-full flex items-center justify-center relative ">
+          {/* Display the user's profile image outside the container */}
+          <img
+            src={userImage}
+            className="h-32 w-32 rounded-full border-4 border-white absolute"
+            style={{ top: '50%', transform: 'translateY(-50%)' }}
+          />
+        </div>
+  
+        <div className="sm mt-20">
+          <div className="text-center p-4">
+            {/* Content container without background */}
+            <div>
+              <span className="font-medium text-gray-900">{full_name}</span><br />
+              <span className="text-gray-500">{email}</span><br />
+            </div>
+          </div>
+        </div>
 
 
       <ul className="text-sm font-medium text-center text-emerald-500 divide-x divide-gray-200 rounded-lg shadow sm:flex dark:divide-emerald-700 dark:text-emerald-400">
@@ -180,7 +249,7 @@ const Profile = () => {
               <h2 className="text-2xl font-semibold text-emerald-600 dark:text-emerald-300 mb-4">Account Settings</h2>
 
               <div className="mb-4">
-                <label className="text-emerald-600 dark:text-emerald-400 block">User Name</label>
+                <label className="text-emerald-600 dark:text-emerald-400 block">Full Name</label>
                 <input
                   className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
                   type="text"
@@ -197,15 +266,7 @@ const Profile = () => {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="text-emerald-600 dark:text-emerald-400 block">Phone</label>
-                <input
-                  className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
-                  type="phone"
-                  value={newUserData.phone}
-                  onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
-                />
-              </div>
+
 
               <div className="mb-4">
                 <label className="text-emerald-600 dark:text-gray-400 block ">Email</label>

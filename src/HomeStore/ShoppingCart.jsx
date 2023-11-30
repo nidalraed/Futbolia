@@ -1,4 +1,3 @@
-// استيراد useNavigate
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -36,13 +35,14 @@ const ShoppingCart = ({ onAddToCart }) => {
   const [loading, setLoading] = useState(true);
   const [delivery, setDelivery] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.state && location.state.products) {
       onAddToCart(location.state.products);
     }
 
-    fetch('http://localhost:3010/product')
+    fetch('http://localhost:3010/cart')
       .then((response) => response.json())
       .then((data) => {
         setCart(data.map((product) => ({ ...product, quantity: 1 })));
@@ -67,11 +67,21 @@ const ShoppingCart = ({ onAddToCart }) => {
   };
 
   const calculateTotal = () => {
-    let total = cart.reduce((total, product) => total + product.price * product.quantity, 0);
+    let total = cart.reduce((acc, product) => {
+      const productPrice = (product && product.price) || 0;
+      const productQuantity = (product && product.quantity) || 0;
+      return acc + productPrice * productQuantity;
+    }, 0);
+  
     if (delivery) {
       total += 10;
     }
-    return total.toFixed(2);
+  
+    if (!isNaN(total)) {
+      return total.toFixed(2);
+    } else {
+      return "0.00";
+    }
   };
 
   if (loading) {
@@ -109,7 +119,7 @@ const ShoppingCart = ({ onAddToCart }) => {
                             <span className="font-semibold">{product.title}</span>
                           </div>
                         </td>
-                        <td className="py-4">${product.price.toFixed(2)}</td>
+                        <td className="py-4">${product.price}</td>
                         <td className="py-4">
                           <div className="flex items-center">
                             <Button
@@ -171,7 +181,10 @@ const ShoppingCart = ({ onAddToCart }) => {
                   />
                   <CheckboxLabel htmlFor="deliveryCheckbox">Delivery</CheckboxLabel>
                 </CheckboxContainer>
-                <Button className="bg-emerald-500 text-white py-2 px-4 rounded-lg mt-4 w-full">
+                <Button
+                  className="bg-emerald-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
+                  onClick={() => navigate('/PaymentForm', { state: { total: calculateTotal() } })}
+                >
                   Checkout
                 </Button>
               </div>

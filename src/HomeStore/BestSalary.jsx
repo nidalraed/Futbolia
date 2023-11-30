@@ -1,18 +1,18 @@
+// BestSalary.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from 'react-router-dom';  // استيراد useNavigate
+import { Link } from 'react-router-dom';
 
 function BestSalary({ onAddToCart, onAddToWishlist }) {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
-  const [heartCount, setHeartCount] = useState(0);
 
   useEffect(() => {
     axios.get('http://localhost:3010/product')
       .then(response => {
-        setProducts(response.data);
+        setProducts(response.data.slice(0, 4));
       })
       .catch(error => {
         console.error('Error fetching product data:', error);
@@ -22,21 +22,43 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
 
   const handleAddToCart = (product) => {
     onAddToCart(product);
-    toast.success('Product added to cart!', {
-      position: 'top-center',
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-
-    // بمجرد إضافة المنتج إلى العربة، قم بتوجيه المستخدم إلى صفحة العربة
+  
+    const cart = {
+      id:product.id,
+      title: product.title,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+    };
+  console.log(cart )
+    axios.post('http://localhost:3010/cart',cart)
+      .then(response => {
+        console.log('Product added to cart:', response.data);
+        toast.success('Product added to cart!', {
+          position: 'top-center',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      })
+      .catch(cartError => {
+        console.error('Error adding product to cart:', cartError);
+        toast.error('Error adding product to cart', {
+          position: 'top-center',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      });
   };
+  
 
   const handleAddToWishlist = (product) => {
     onAddToWishlist(product);
-    setHeartCount(heartCount + 1);
     toast.success('Product added to wishlist!', {
       position: 'top-center',
       autoClose: 2000,
@@ -47,16 +69,15 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
     });
   };
 
-
   return (
     <div>
       {error && <div>Error: {error}</div>}
-      <section className="flex items-center py-20 bg-white lg:h-screen dark:bg-gray-800 ">
+      <section className="flex items-center py-20 bg-white lg:h-screen dark:bg-gray-800">
         <div className="px-4 mx-auto max-w-7xl mt-12">
-          <div className="grid grid-cols-1 gap-4 lg:gap-6 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4 ">
-            {products.map((product, index) => (
-              <div key={index} className="relative overflow-hidden bg-white shadow rounded-xl dark:bg-gray-700 mt-12">
-                <div className="relative overflow-hidden ">
+          <div className="grid grid-cols-1 gap-4 lg:gap-6 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {products.map((product) => (
+              <div key={product.id} className="relative overflow-hidden bg-white shadow rounded-xl dark:bg-gray-700 mt-12">
+                <div className="relative overflow-hidden">
                   <div className="mb-5 overflow-hidden">
                     <img
                       className="object-cover w-full mx-auto transition-all rounded h-72 hover:scale-110"
@@ -85,11 +106,10 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
                     </svg>
                   </button>
                 </div>
-                <Link to={`/product/${product.id}`}>
+
                   <h3 className="px-5 mb-4 text-lg font-bold dark:text-white">
                     {product.title}
                   </h3>
-                </Link>
                 <div className="flex">
                   <div className="w-1/2 px-5 pb-3">
                     <p className="text-lg font-bold text-emerald-600 dark:text-emerald-300">
