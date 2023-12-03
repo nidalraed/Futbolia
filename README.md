@@ -1,8 +1,6 @@
 Futbolia Readme
-Version: 1.0
-Last Updated: [11/11/2023]
 Author: Nidal Raed
-Live URL: [ https://nidalraed.github.io/Futbolia/]
+Organization link : [ https://github.com/Footboolia-Project/Final-verion-Footboolia]
 
 Overview
 Futbolia is a comprehensive sports platform that integrates sports playground booking with a premium sports store, providing a one-stop destination for sports enthusiasts. Whether you're looking to reserve a sports venue or shop for top-quality sports equipment, Futbolia has you covered.
