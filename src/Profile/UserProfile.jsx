@@ -138,13 +138,29 @@ const Profile = () => {
   const handleImageChange = (e) => {
     if (e.target.files.length > 0) {
       const selectedImage = e.target.files[0];
-      setNewUserData({
-        ...newUserData,
-        image: selectedImage,
-      });
-      setUserImage(URL.createObjectURL(selectedImage));
+  
+      // قم بتشفير الصورة إلى base64
+      const reader = new FileReader();
+  
+      reader.onloadend = () => {
+        setNewUserData({
+          ...newUserData,
+          image: reader.result, // استخدم الصورة المشفرة
+        });
+  
+        // تحديث الصورة على الشاشة بعد اكتمال التحميل
+        setUserImage(reader.result);
+      };
+  
+      // فحص إذا ما كان هناك خطأ في تحميل الصورة
+      reader.onerror = () => {
+        console.error('Error loading image:', reader.error);
+      };
+  
+      reader.readAsDataURL(selectedImage);
     }
   };
+  
   
 
   useEffect(() => {
@@ -183,12 +199,11 @@ const Profile = () => {
             style={{ top: '50%', transform: 'translateY(-50%)' }}
           />
         </div>
-  
         <div className="sm mt-20">
           <div className="text-center p-4">
             {/* Content container without background */}
             <div>
-              <span className="font-medium text-gray-900">{full_name}</span><br />
+              <span className="font-medium  text-gray-900">{full_name}</span><br />
               <span className="text-gray-500">{email}</span><br />
             </div>
           </div>

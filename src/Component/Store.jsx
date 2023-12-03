@@ -63,7 +63,7 @@ function Store() {
       <br></br><br></br><br></br><br></br>
 
       {/* أفضل الرواتب */}
-      <BestSa />
+      {/* <BestSa /> */}
       {products.length > 0 && <BestSalary onAddToCart={handleAddToCart} onAddToWishlist={handleAddToWishlist} />}
 
       {/* إعلانات */}

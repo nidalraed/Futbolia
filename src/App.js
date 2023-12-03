@@ -41,7 +41,6 @@ function App() {
           <Route path="/aboutus" element={<AboutUs1 />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/category" element={<Category />} />
-          <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/details/:id" element={<StadiumDetails />} />
           <Route path="/store" element={<Store />} />
@@ -50,14 +49,8 @@ function App() {
           <Route path="/category/:categorySlug" element={<CategoryPage />} />
           <Route path="/playgrounds" element={<Playgrounds />} />
 
-
-
-
-
-
           {isAuthenticated && (
             <>
-              <Route path="/playgrounds" element={<Playgrounds />} />
               <Route path="/bookingform" element={<BookingForm />} />
               <Route path="/paymentform" element={<PaymentForm />} />
               <Route path="/profile" element={<Profile />} />

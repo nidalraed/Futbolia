@@ -9,12 +9,13 @@ function Comment() {
   const [comment, setComment] = useState('');
   const [rating, setRating] = useState(0);
   const [commentsList, setCommentsList] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(true);
 
   const onStarClick = (nextValue) => {
     setRating(nextValue);
   };
 
-  const handlePostComment = () => {
+  const handlePostComment = async () => {
     const token = fetchUserData();
 
     if (!token) {
@@ -31,55 +32,57 @@ function Comment() {
       Authorization: `Bearer ${token}`,
     };
 
-    axios.post('http://localhost:2000/add-review', data, { headers })
-      .then((response) => {
-        if (response.status === 200 || response.status === 201) {
-          toast.success('Review added successfully!', {
-            position: 'top-center',
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-          });
+    try {
+      const response = await axios.post('http://localhost:2000/add-review', data, { headers });
 
-          // Refresh comments list after posting a new comment
-          fetchComments();
-        }
-      })
-      .catch((error) => {
-        console.error('Error adding review:', error);
-        toast.error('Error adding review. Please try again later.');
-      });
+      if (response.status === 200 || response.status === 201) {
+        toast.success('Review added successfully!', {
+          position: 'top-center',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        // Refresh comments list after posting a new comment
+        fetchComments();
+      }
+    } catch (error) {
+      console.error('Error adding review:', error);
+      toast.error('Error adding review. Please try again later.');
+    }
   };
 
   const fetchUserData = () => {
-    let token = Cookies.get('authToken');
-
-    if (!token) {
-      token = localStorage.getItem('isLoggedIn');
-    }
-
-    return token;
+    const token = Cookies.get('authToken') || localStorage.getItem('isLoggedIn');
+    return token || null;
   };
 
-  const fetchComments = () => {
+  const fetchComments = async () => {
     const token = fetchUserData();
-
+  
     if (!token) {
       console.error('Authentication token not found. Unable to fetch comments.');
       return;
     }
-
-    axios.get('http://localhost:2000/get-reviews', { headers: { Authorization: `Bearer ${token}` } })
-      .then((response) => {
-        setCommentsList(response.data); // Assuming your server returns an array of comments
-      })
-      .catch((error) => {
-        console.error('Error fetching comments:', error);
-      });
+  
+    try {
+      const response = await axios.get('http://localhost:2000/user-reviews', { headers: { Authorization: `Bearer ${token}` } });
+  
+      // Check if the response data has a "reviews" property and if it contains an array
+      if (response.data && Array.isArray(response.data.reviews)) {
+        setCommentsList(response.data.reviews);
+      } else {
+        console.error('Invalid response format for comments:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
   };
-
+  
   useEffect(() => {
     // Fetch comments when the component mounts
     fetchComments();
@@ -87,24 +90,24 @@ function Comment() {
 
   return (
     <div>
-      <div className="border border-gray-300 p-4 rounded-lg max-w-full mx-auto ">
+      <div className="border border-gray-300 p-4 rounded-lg max-w-full mx-auto">
         <h2 className="text-lg font-medium mb-2">Leave a comment</h2>
         <form>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="comment">
+            <label htmlFor="comment" className="block text-gray-700 font-medium mb-2">
               Comment
             </label>
             <textarea
-              rows={4}
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-500"
               id="comment"
+              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-gray-500"
               placeholder="Enter your comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
+              rows={4}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-2" htmlFor="rating">
+            <label htmlFor="rating" className="block text-gray-700 font-medium mb-2">
               Rating
             </label>
             <StarRating
@@ -117,8 +120,8 @@ function Comment() {
           </div>
           <div className="flex justify-end">
             <button
-              className="bg-emerald-500 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
+              className="bg-emerald-500 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               onClick={handlePostComment}
             >
               Post Comment
@@ -126,24 +129,28 @@ function Comment() {
           </div>
         </form>
 
-        {/* Render existing comments */}
+        {/* Render existing comments or loading indicator */}
         <div className="mt-4">
           <h3 className="text-lg font-medium mb-2">Comments:</h3>
-          <ul className="list-none p-0">
-            {commentsList.map((commentData, index) => (
-              <li key={index} className="mb-4">
-                <div className="border p-3 rounded-md bg-gray-100">
-                  <p className="text-gray-700">{commentData.comment}</p>
-                  <StarRating
-                    name={`rating-${index}`}
-                    starCount={5}
-                    value={commentData.rating}
-                    editing={false}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+          {loadingComments ? (
+            <p>Loading comments...</p>
+          ) : (
+            <ul className="list-none p-0">
+              {commentsList.map((commentData, index) => (
+                <li key={index} className="mb-4">
+                  <div className="border p-3 rounded-md bg-gray-100">
+                    <p className="text-gray-700">{commentData.comment}</p>
+                    <StarRating
+                      name={`rating-${index}`}
+                      starCount={5}
+                      value={commentData.rating}
+                      editing={false}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

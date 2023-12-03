@@ -44,7 +44,7 @@ const categories = [
 
     function Category() {
       return (
-        <div className="mt-16 flex flex-wrap justify-center space-x-4 sm:space-x-8 md:space-x-12 lg:space-x-16">
+        <div className="mt-16 flex flex-wrap bg-gray-50 justify-center space-x-4 sm:space-x-8 md:space-x-12 lg:space-x-16">
           {categories.map((category) => (
             <div key={category.id} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/6 mb-8">
               <Link to={category.path}>

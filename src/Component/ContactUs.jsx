@@ -155,7 +155,6 @@
 
 // export default ContactUs
 
-
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -165,6 +164,10 @@ function ContactUs() {
     email: '',
     message: '',
   });
+
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -177,15 +180,32 @@ function ContactUs() {
     e.preventDefault();
 
     try {
+      // Form validation logic (add your own validation here)
+
+      // Show loading state
+      setLoading(true);
+
       const response = await axios.post('http://localhost:2000/contact', formData);
 
+      // Reset the form on successful submission
+      setFormData({
+        full_name: '',
+        email: '',
+        message: '',
+      });
+
+      // Provide feedback to the user
       if (response.status === 200) {
-        console.log('Email sent successfully');
+        setSubmitSuccess(true);
       } else {
-        console.error('Failed to send email');
+        setSubmitError('Failed to send email');
       }
     } catch (error) {
-      console.error('Error sending email:', error.message);
+      // Provide specific error messages to the user
+      setSubmitError(`Error sending email: ${error.message}`);
+    } finally {
+      // Hide loading state
+      setLoading(false);
     }
   };
 
@@ -241,13 +261,17 @@ function ContactUs() {
         <button
           type="submit"
           className="mb-6 inline-block w-full rounded bg-emerald-400 px-6 py-2.5 font-medium uppercase leading-normal text-white hover:shadow-md hover:bg-emerald-500"
+          disabled={loading}
         >
-          Send
+          {loading ? 'Sending...' : 'Send'}
         </button>
+
+        {/* Display success or error message */}
+        {submitSuccess && <p className="text-green-500">Email sent successfully!</p>}
+        {submitError && <p className="text-red-500">{submitError}</p>}
       </form>
     </div>
   );
 }
 
 export default ContactUs;
-

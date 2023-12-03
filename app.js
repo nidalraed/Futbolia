@@ -22,16 +22,28 @@ const pool = new Pool({
 });
 
 // Move the storage definition above the multer middleware creation
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, 'C:/Users/Orange/Desktop/Futbolia/src/images');
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.originalname);
+//   },
+// });
+
+// const upload = multer({ storage: storage });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'C:/Users/Orange/Desktop/Futbolia/src/images');
+    cb(null, 'C:/Users/Orange/Desktop/Futbolia/src/images'); // Adjust the destination folder as needed
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, Date.now() + '-' + file.originalname);
   },
 });
 
 const upload = multer({ storage: storage });
+
+app.use(express.json());
 ///////////////////////////////////////////// USERS ///////////////////////////////////////////////////////////
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
@@ -364,13 +376,8 @@ app.post('/add-stadium', authenticateToken, upload.array('images', 5), async (re
       [name, city, location, size, hourly_rate, description, user_id, 'pending', phone, start_time, end_time]
     );
 
-    // تعديل اسم الحقل إلى اسم الحقل الذي يخزن روابط الصور في قاعدة البيانات
+    // Update the field name to match the Multer configuration
     const images_url = req.files.map((file) => `/images_url/${file.filename}`);
-
-    // أدخل روابط الصور في جدول البيانات أو افعل ما تراه مناسبًا
-    // قد تحتاج إلى تعديل هذا بناءً على هيكل جدول البيانات الخاص بك
-    // يُفضل تخزين روابط الصور في جدول مستقل وربطها بسجل الاستاد باستخدام مفتاح خارجي
-    // قم بتحديث هذا الجزء وفقًا لتكوين قاعدة البيانات الخاصة بك
 
     return res.status(201).json({ message: 'Stadium request added successfully', stadium: result.rows[0], images_url });
   } catch (error) {
@@ -541,27 +548,38 @@ app.post('/add-review', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/user-reviews', authenticateToken, async (req, res) => {
+  const { user_id } = req.user;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to handle contact form submissions
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'hma91109@gmail.com',
-    pass: 'kjnhebktzoqaqhgs'
+  try {
+    // Retrieve reviews for the authenticated user
+    const reviewsResult = await pool.query(
+      'SELECT stadium_id, rating, comment FROM stadium_reviews WHERE user_id = $1',
+      [user_id]
+    );
+
+    // Send the reviews as the response
+    res.json({ reviews: reviewsResult.rows });
+  } catch (error) {
+    console.error('Error executing query', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // نقطة نهاية لمعالجة نموذج الاتصال
 app.post('/contact', async (req, res) => {
   const { name, email, message } = req.body;
 
   try {
+    const replay = "Subject for the email"; // Define the replay variable
+    const thankyou = "Thank you for your message"; // Define the thankyou variable
+
     const mailOptions = {
       from: "",
       to: email,
-      subject: `replay`,
-      text: `thankyou`
+      subject: replay,
+      text: thankyou
     };
 
     transporter.sendMail(mailOptions, function (error, info) {

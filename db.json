@@ -343,81 +343,6 @@
       "price": 29.99,
       "originalPrice": 39.99,
       "buttonText": "Add To Cart"
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      }
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      }
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      },
-      "id": 5
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      },
-      "id": 6
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      },
-      "id": 7
-    },
-    {
-      "product": {
-        "id": 2,
-        "image": "https://cdn.salla.sa/KzZjB/cvX2HXvJQvGh5jyfYGydJ43JvDFCv8LKvexmFRky.jpg",
-        "title": "Inter Miami Messi boys' kit 2023/2024",
-        "price": 18.99,
-        "originalPrice": 20.99,
-        "buttonText": "Add To Cart"
-      },
-      "id": 8
-    },
-    {
-      "product": {
-        "id": 3,
-        "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
-        "title": "Pink Tshirt With Braided Sweater Pattern",
-        "price": 29.99,
-        "originalPrice": 39.99,
-        "buttonText": "Add To Cart"
-      },
-      "id": 9
     }
   ],
   "ShoseProduct": [
@@ -560,36 +485,6 @@
       "ageofcatagory": "15 years to  21 years",
       "price": 25,
       "rating": 4.5
-    }
-  ],
-  "reset-1": [
-    {
-      "email": "user@example.com",
-      "error": "",
-      "successMessage": "Password reset email sent. Check your inbox."
-    },
-    {
-      "email": "",
-      "error": "Failed to reset password. Please try again.",
-      "successMessage": ""
-    },
-    {
-      "reset-password": [
-        {
-          "id": 1,
-          "email": "nedalraed55@gmail.com",
-          "password": "123456789",
-          "error": "",
-          "successMessage": "Password reset email sent. Check your inbox."
-        },
-        {
-          "id": 2,
-          "email": "user2@example.com",
-          "password": "hashedPassword2",
-          "error": "Failed to reset password. Please try again.",
-          "successMessage": ""
-        }
-      ]
     }
   ],
   "stadium": [
@@ -999,20 +894,6 @@
       "id": 26
     }
   ],
-  "users": [
-    {
-      "full_name": "nedal",
-      "email": "nedalraed55@gmail.com",
-      "phone": "",
-      "id": 1
-    },
-    {
-      "id": 2,
-      "full_name": "jane_doe",
-      "email": "jane@example.com",
-      "image": "https://i.pinimg.com/280x280_RS/39/d4/77/39d47758fc973887b276f5464df10d53.jpg"
-    }
-  ],
   "wishlist": [
     {
       "id": 1,
@@ -1204,6 +1085,13 @@
       "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg"
     },
     {
+      "id": 3,
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 29.99,
+      "quantity": 1,
+      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg"
+    },
+    {
       "id": 4,
       "title": "Pink Tshirt With Braided Sweater Pattern",
       "price": 29.99,
@@ -1211,11 +1099,68 @@
       "image": "https://cdn.salla.sa/KzZjB/fJDb9fcK7rluuHaDKh2At4jNLyuvkKa2tPrHKfRy.jpg"
     },
     {
-      "id": 3,
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 99.99,
+      "image": "https://cdn.salla.sa/KzZjB/Mm7qdtKb5s6eZvL7hhNSU6nJdc6jUzVKyFn1sPw6.jpg",
+      "id": 5
+    },
+    {
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 99.99,
+      "image": "https://cdn.salla.sa/KzZjB/Rd0lNmMMoxlW8CZQNg3b8OlXbgZmOYTqSTYtrIJa.jpg",
+      "id": 6
+    },
+    {
       "title": "Pink Tshirt With Braided Sweater Pattern",
       "price": 29.99,
-      "quantity": 1,
-      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg"
+      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
+      "id": 7
+    },
+    {
+      "title": "Inter Miami Messi boys' kit 2023/2024",
+      "price": 18.99,
+      "image": "https://cdn.salla.sa/KzZjB/cvX2HXvJQvGh5jyfYGydJ43JvDFCv8LKvexmFRky.jpg",
+      "id": 8
+    },
+    {
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 29.99,
+      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
+      "id": 9
+    },
+    {
+      "title": "Nike football boots",
+      "price": 41.99,
+      "image": "https://cdn.salla.sa/wjRK/xcypAaB8XoSLIMqctvsg6K6fTFN213ZAhwg6wXZN.jpg",
+      "id": 10
+    },
+    {
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 29.99,
+      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
+      "id": 11
+    },
+    {
+      "title": "Pink Tshirt With Braided Sweater Pattern",
+      "price": 29.99,
+      "image": "https://cdn.salla.sa/KzZjB/M68kFTu0C8UIeK4ORKcYL7f3nHpderraMK8QOrCq.jpg",
+      "id": 12
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "title": "Product 1",
+      "description": "Description for product 1.",
+      "image": "image1.jpg",
+      "price": 20.99
+    },
+    {
+      "id": 2,
+      "title": "Product 2",
+      "description": "Description for product 2.",
+      "image": "image2.jpg",
+      "price": 34.99
     }
   ]
 }

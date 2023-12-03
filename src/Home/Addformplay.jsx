@@ -596,8 +596,9 @@ const AddFormPlay = () => {
     phone: '',
     start_time: '',
     end_time: '',
-    images: [],
+    images_url: [], // Corrected name
   });
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -641,11 +642,11 @@ const AddFormPlay = () => {
   };
 
   const handleChange = (e) => {
-    if (e.target.name === 'images') {
+    if (e.target.name === 'images_url') { // Corrected name
       const files = e.target.files;
       setFormData({
         ...formData,
-        images: files,
+        images_url: files, // Corrected name
       });
     } else {
       setFormData({
@@ -843,21 +844,21 @@ const AddFormPlay = () => {
 
           {/* Upload Images */}
           <div className="mb-5">
-            <label
-              htmlFor="images_url"
-              className="mb-3 block text-base font-medium text-[#07074D]"
-            >
-              Upload Images
-            </label>
-            <input
-              type="file"
-              name="images_url"
-              id="images"
-              accept="image/*"
-              multiple
-              onChange={handleChange}
-            />
-          </div>
+  <label
+    htmlFor="images_url" // Corrected htmlFor
+    className="mb-3 block text-base font-medium text-[#07074D]"
+  >
+    Upload Images
+  </label>
+  <input
+    type="file"
+    name="images_url" // Corrected name
+    id="images"
+    accept="image/*"
+    multiple
+    onChange={handleChange}
+  />
+</div>
 
           {/* Submit Button */}
           <button
