@@ -1,28 +1,16 @@
-import React, { useState } from "react";
+// CheckoutForm.js
+
 import { ElementsConsumer, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import React from "react";
 import CardSection from "./CardSection";
 import axios from "axios";
-import { useLocation, useNavigate } from 'react-router-dom';
+import "../App.css"; // Import your CSS file for styling
 
 function CheckoutForm({ stripe, elements }) {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { name, price } = location.search
-    ? Object.fromEntries(new URLSearchParams(location.search))
-    : {};
-
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
-      return;
-    }
-
-    // Validate the form fields
-    if (!validateForm()) {
       return;
     }
 
@@ -32,64 +20,41 @@ function CheckoutForm({ stripe, elements }) {
     });
 
     if (error) {
-      setErrorMessage(error.message);
-      setSuccessMessage(""); // Clear success message if there was an error
+      console.log(error.message);
     } else {
-      // Continue with the rest of your code
-      setErrorMessage(""); // Clear any previous error message
-
-      // Handle amount
       if (paymentMethod) {
         const { id } = paymentMethod;
-
-        // Pass the price to the backend
-        const response = await axios.post("http://localhost:3010/cart", {
-          amount: price * 100, // Assuming price is in dollars, convert to cents
+        const response = await axios.post("http://localhost:2000/Payment", {
+          amount: 10 * 100,
           id,
         });
 
         if (response.data.success) {
-          setSuccessMessage("Payment successful!"); // Set success message
-
-          // Redirect to the home page after successful payment
-          navigate('/'); // You can replace '/' with the actual home page path
+          try {
+            alert("Payment successful")
+            console.log("Payment successful");
+          } catch (error) {
+            console.log(error);
+          }
         } else {
           console.log("Payment failed");
-          // Handle failure appropriately
         }
       } else {
         console.log("Payment method is undefined");
-        // Handle undefined paymentMethod
       }
     }
   };
 
-  // Basic form validation function
-  const validateForm = () => {
-    // You can add more sophisticated validation as needed
-    const cardElement = elements.getElement(CardElement);
-
-    if (!cardElement) {
-      setErrorMessage("Please enter card information");
-      return false;
-    }
-
-    setErrorMessage("");
-    return true;
-  };
-
   return (
-    <div>
-      <div className="product-info">
-        <h3 className="product-title">{name}</h3>
-        <h4 className="product-price">{`$${price}`}</h4>
+    <div className="checkout-container">
+      <div className="product-info mt-32">
+        <h3 className="product-title">Product</h3>
+        <h4 className="product-price">$10</h4>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="payment-form">
         <CardSection />
         <button className="btn-pay">Buy Now</button>
       </form>
-      {errorMessage && <div className="text-red-500 mt-2">{errorMessage}</div>}
-      {successMessage && <div className="text-green-500 mt-2">{successMessage}</div>}
     </div>
   );
 }

@@ -208,33 +208,82 @@ const Profile = () => {
         console.error('Error fetching wishlist data: ', error);
       });
   }, []);
-    useEffect(() => {
+  useEffect(() => {
     window.scroll({
       top: 0,
       left: 100,
       behavior: 'smooth',
     });
   }, []);
+  const [playgroundData, setPlaygroundData] = useState({
+    name: '',
+    price: '',
+    start_time: '',
+    end_time: '',
+    images: [], // Updated for multiple images
+    description: '',
+    // Add other playground details as needed
+  });
+  const handleSavePlaygroundChanges = async () => {
+    try {
+      let token = Cookies.get('authToken') || localStorage.getItem('authToken');
 
+      if (!token) {
+        console.error('Token not found. User not authenticated.');
+        // Handle authentication failure (e.g., redirect to login, show error message, etc.)
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', playgroundData.name);
+      formData.append('price', playgroundData.price);
+      formData.append('start_time', playgroundData.start_time);
+      formData.append('end_time', playgroundData.end_time);
+      formData.append('description', playgroundData.description);
+
+      // Append each image to the form data
+      for (let i = 0; i < playgroundData.images.length; i++) {
+        formData.append(`images[${i}]`, playgroundData.images[i]);
+      }
+
+      const response = await axios.put(`http://localhost:2000/update-playground`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Display a success message and log the response data
+      alert('Playground changes saved successfully');
+      console.log('Response data:', response.data);
+
+      // Redirect or update UI as needed
+    } catch (error) {
+      console.error('Error saving playground changes: ', error);
+
+      // Handle error (display error message, etc.)
+    }
+  };
   return (
-    <div>
-      <div className="sm mt-24 bg-emerald-500 h-52 w-full flex items-center justify-center relative ">
-        <img
-          src={userImage}
-          className="h-32 w-32 rounded-full border-4 border-white absolute"
-          style={{ top: '50%', transform: 'translateY(-50%)' }}
-          alt="User Profile"
-        />
-      </div>
-
-      <div className="sm mt-20">
-        <div className="text-center p-4">
-          <div>
-            <span className="font-medium text-gray-900">{full_name}</span><br />
-            <span className="text-gray-500">{email}</span><br />
+      <div>
+        <div className="sm mt-24 bg-emerald-500 h-52 w-full flex items-center justify-center relative ">
+          {/* Display the user's profile image outside the container */}
+          <img
+            src={userImage}
+            className="h-32 w-32 rounded-full border-4 border-white absolute"
+            style={{ top: '50%', transform: 'translateY(-50%)' }}
+          />
+        </div>
+        <div className="sm mt-20">
+          <div className="text-center p-4">
+            {/* Content container without background */}
+            <div>
+              <span className="font-medium  text-gray-900">{full_name}</span><br />
+              <span className="text-gray-500">{email}</span><br />
+            </div>
           </div>
         </div>
-      </div>
+
 
       <ul className="text-sm font-medium text-center text-emerald-500 divide-x divide-gray-200 rounded-lg shadow sm:flex dark:divide-emerald-700 dark:text-emerald-400">
         <li className="w-full">
@@ -255,18 +304,31 @@ const Profile = () => {
         <li className="w-full">
           <a
             href="#"
-            onClick={() => handleTabClick('YourBooking')}
+            onClick={() => setActiveTab('formbooking')}
             className={`inline-block w-full p-4 ${
-              activeTab === 'YourBooking'
+              activeTab === 'formbooking'
                 ? 'bg-white hover:text-emerald-700 hover:bg-gray-50'
                 : 'dark-bg-gray-800 dark-hover-text-white dark-hover-bg-gray-700'
             } focus-ring-4 focus-ring-blue-300 focus-outline-none`}
-            aria-current={activeTab === 'YourBooking' ? 'page' : null}
+            aria-current={activeTab === 'formbooking' ? 'page' : null}
           >
             Your Booking
           </a>
         </li>
-
+        <li className="w-full">
+          <a
+            href="#"
+            onClick={() => setActiveTab('EditMyPlayground')}
+            className={`inline-block w-full p-4 ${
+              activeTab === 'EditMyPlayground'
+                ? 'text-emerald-900 bg-gray-100'
+                : 'bg-white hover:text-emerald-700 hover:bg-gray-50'
+            } focus-ring-4 focus-ring-emerald-300 active focus:outline-none dark:bg-emerald-700 dark:text-white`}
+            aria-current={activeTab === 'EditMyPlayground' ? 'page' : null}
+          >
+            Edit My Playground
+          </a>
+        </li>
         <li className="w-full">
           <a
             href="#"
@@ -306,6 +368,8 @@ const Profile = () => {
                   type="password"
                 />
               </div>
+
+
 
               <div className="mb-4">
                 <label className="text-emerald-600 dark:text-gray-400 block ">Email</label>
@@ -347,54 +411,157 @@ const Profile = () => {
           </form>
         </div>
       )}
- {activeTab === 'YourBooking' && (
-      <section className="overflow-x-auto">
-        <h2 className="text-2xl font-semibold text-emerald-600 mb-4 mt-4">Your Bookings:</h2>
-        {Array.isArray(userBookings) && userBookings.length > 0 ? (
-          <div className="w-full overflow-x-auto">
-            <table className="w-full sm:w-auto border-collapse border border-emerald-300 mb-10 sm:ml-96">
-              <thead>
-                <tr className="bg-emerald-500 text-white">
-                  <th className="py-2 px-4">Name</th>
-                  <th className="py-2 px-4">Date</th>
-                  <th className="py-2 px-4">Start Time</th>
-                  <th className="py-2 px-4">End Time</th>
-                  <th className="py-2 px-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userBookings.map((booking, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : ''}>
-                    <td className="py-2 px-4">{booking.name}</td>
-                    <td className="py-2 px-4">{booking.booking_date}</td>
-                    <td className="py-2 px-4">{booking.start_time}</td>
-                    <td className="py-2 px-4">{booking.end_time}</td>
-                    <td className="py-2 px-4">
-                      {cancelable && !cancellationExpired && (
-                        <button
-                          onClick={() => handleCancelBooking(booking.bookingId)}
-                          className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
-                          type="button"
-                        >
-                          Cancel Booking
-                        </button>
-                      )}
-                      {cancellationExpired && (
-                        <span className="text-green-500">Booking confirmed</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p>No bookings available.</p>
-        )}
-      </section>
-    )}
-  </div>
-);
-};
 
-export default Profile;
+      {activeTab === 'formbooking' && (
+        <div>
+          <h2>Your Booking:</h2>
+          {formbookingData && formbookingData.map((order) => (
+            <div key={order.id}>
+              <p>{order.orderNumber}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeTab === 'WishList' && (
+        <div>
+          <h2>Wishlist:</h2>
+          {wishlistData && wishlistData.map((item) => (
+            <div key={item.id}>
+              <p>{item.name}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+{/*       
+{activeTab === 'EditMyPlayground' && (
+        <div className="flex justify-center mt-20 px-8">
+          <form className="max-w-2xl">
+            <div className="border shadow rounded-lg p-6 bg-white dark:bg-emerald-600">
+              <h2 className="text-2xl font-semibold text-emerald-600 dark:text-emerald-300 mb-4">Edit Playground</h2>
+
+              <div className="mb-4">
+                <label className="text-emerald-600 dark:text-emerald-400 block">Playground Name</label>
+                <input
+                  className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+                  type="text"
+                  value={playgroundData.name}
+                  onChange={(e) => setPlaygroundData({ ...playgroundData, name: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="text-emerald-600 dark:text-emerald-400 block">Playground Price</label>
+                <input
+                  className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+                  type="text"
+                  value={playgroundData.price}
+                  onChange={(e) => setPlaygroundData({ ...playgroundData, price: e.target.value })}
+                />
+              </div>
+
+
+              <div className="flex justify-end">
+                <button
+                  onClick={handleSavePlaygroundChanges}
+                  className="py-2 px-4 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 focus:outline-none focus:ring focus:border-emerald-300"
+                  type="button"
+                >
+                  Save Playground Changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )} */}
+      {activeTab === 'EditMyPlayground' && (
+    <div className="flex justify-center mt-20 px-8">
+      <form className="max-w-2xl">
+        <div className="border shadow rounded-lg p-6 bg-white dark:bg-emerald-600">
+          <h2 className="text-2xl font-semibold text-emerald-600 dark:text-emerald-300 mb-4">Edit Playground</h2>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">Playground Name</label>
+            <input
+              type="text"
+              name="name"
+              value={playgroundData.name}
+              onChange={(e) => setPlaygroundData({ ...playgroundData, name: e.target.value })}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">Playground Price</label>
+            <input
+              type="number"
+              name="price"
+              value={playgroundData.price}
+              onChange={(e) => setPlaygroundData({ ...playgroundData, price: e.target.value })}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            /> 
+          </div>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">Start Time</label>
+            <input
+              type="time"
+              name="start_time"
+              value={playgroundData.start_time}
+              onChange={(e) => setPlaygroundData({ ...playgroundData, start_time: e.target.value })}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">End Time</label>
+            <input
+              type="time"
+              name="end_time"
+              value={playgroundData.end_time}
+              onChange={(e) => setPlaygroundData({ ...playgroundData, end_time: e.target.value })}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">Description</label>
+            <textarea
+              name="description"
+              value={playgroundData.description}
+              onChange={(e) => setPlaygroundData({ ...playgroundData, description: e.target.value })}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="text-emerald-600 dark:text-emerald-400 block">Playground Images</label>
+            <input
+              type="file"
+              name="images"
+              accept="image/*"
+              multiple
+              onChange={handlePlaygroundImagesChange}
+              className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleSavePlaygroundChanges}
+              className="py-2 px-4 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 focus:outline-none focus:ring focus:border-emerald-300"
+              type="button"
+            >
+              Save Playground Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  )}    
+    </div>
+  );
+}
+
+export default SuperProfile;

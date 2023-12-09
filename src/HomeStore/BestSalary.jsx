@@ -60,7 +60,7 @@ function BestSalary({ onAddToCart, onAddToWishlist }) {
         <h1 className="best-seller-title">Best Salary</h1>
         <hr className="orange-line" />
       </div>
-      <section className="flex items-center py-20 bg-gray-100 lg:h-[50%] dark:bg-gray-800 pb-80 ">
+      <section className="flex items-center py-20 bg-gray-70 lg:h-[60vh] dark:bg-gray-800 mt-16">
         <div className="px-4 mx-auto max-w-7xl mb-32">
           <div className="grid grid-cols-1 gap-4 lg:gap-6 sm:gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product) => (

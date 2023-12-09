@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CheckoutForm from '../Component/CheckoutForm';
 
 const Table = styled.table`
   width: 100%;
@@ -107,7 +108,7 @@ const ShoppingCart = ({ onAddToCart }) => {
     if (!isNaN(total)) {
       return total.toFixed(2);
     } else {
-      return "0.00";
+      return '0.00';
     }
   };
 
@@ -118,7 +119,7 @@ const ShoppingCart = ({ onAddToCart }) => {
   return (
     <Container>
       <ShoppingCartContainer>
-        <h1 className="text-2xl font-semibold mb-4 mt-32 ">Shopping Cart</h1>
+        <h1 className="text-2xl font-semibold mb-4 mt-32">Shopping Cart</h1>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="md:w-3/4">
             <div className="bg-white rounded-lg shadow-md p-6 mb-4">
@@ -209,7 +210,11 @@ const ShoppingCart = ({ onAddToCart }) => {
               </CheckboxContainer>
               <Button
                 className="bg-emerald-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
-                onClick={() => navigate('/PaymentForm', { state: { total: calculateTotal() } })}
+                onClick={() =>
+                  navigate('/Payment', {
+                    state: { total: calculateTotal(), cart: cart },
+                  })
+                }
               >
                 Checkout
               </Button>

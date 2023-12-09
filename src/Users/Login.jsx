@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -49,6 +50,13 @@ localStorage.setItem('isLoggedIn', 'true');
       }
     }
   };
+  useEffect(() => {
+    window.scroll({
+      top: 100,
+      left: 100,
+      behavior: 'smooth',
+    });
+  }, []);
   
   return (
     <div className="flex items-center justify-center h-screen mt-10">
@@ -102,7 +110,7 @@ localStorage.setItem('isLoggedIn', 'true');
             onClick={handleLogin}
           >
             Sign In
-          </button>
+          </button> 
           {error && <p className="text-red-500 mt-2">{error}</p>}
           <p className="flex justify-center mt-6 font-sans text-sm antialiased font-light leading-normal text-inherit">
             Don't have an account?

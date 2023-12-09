@@ -7,7 +7,7 @@ function Cardsground() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3010/stadiums')
+      .get('http://localhost:2000/stadiums')
       .then((response) => {
         setLatestCards(response.data);
       })
@@ -33,6 +33,7 @@ function Cardsground() {
     <div
     style={{
       width: '90%',
+      height:'70%',
       margin: 'auto',
       display: 'flex',
       justifyContent: 'space-around',
@@ -45,7 +46,7 @@ function Cardsground() {
     }}
       className="relative mt-10 p-2 rounded-lg"
     >
-      {latestCards.map((card) => (
+      {latestCards.slice(0, 4).map((card) => (
         <div
           key={card.id}
           className="overflow-hidden bg-white rounded-md shadow-md text-slate-900 shadow-slate-200 mb-4 animate-card hover:animate-card-hover cursor-pointer "
@@ -59,7 +60,7 @@ function Cardsground() {
           }}
         >
           <div className="relative p-4 border-green-700">
-            <img src={card.image} alt={card.name} className="aspect-video w-full rounded-t-md" />
+            <img src={card.images_url} alt={card.name} className="aspect-video w-full rounded-t-md" />
             <div className="absolute top-0 right-0 p-3 bg-emerald-600">
               <svg
                 className="w-4 h-4 text-yellow-300 me-1"
@@ -78,8 +79,8 @@ function Cardsground() {
             <p className="text-xs opacity-75 mb-2">{card.location}</p>
           </div>
           <div className="flex justify-between items-center p-3">
-            <p className="text-xs opacity-75 font-bold">{card.price} JOD</p>
-            <Link to={`/details/${card.id}`}>
+            <p className="text-xs opacity-75 font-bold">{card.hourly_rate} JOD</p>
+            <Link to={`/details/${card.stadium_id}`}>
               <button
                 className="bg-emerald-500 text-white p-2 rounded-md transition duration-300 hover:bg-emerald-600 shadow-md"
                 onClick={() => {

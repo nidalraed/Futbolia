@@ -12,18 +12,18 @@ import Academies from './Component/Academies';
 import ForgotPassword from './Users/ForgotPassword';
 import StadiumDetails from './Plygroud/StadiumDetails';
 import BookingForm from './Plygroud/BookingForm';
-import PaymentForm from './Plygroud/PaymentForm';
+import PaymentForm from './Payment';
 import Profile from './Profile/UserProfile';
 import ShoppingCart from './HomeStore/ShoppingCart';
 import Addformplay from './Home/Addformplay';
 import Price from './Home/Price';
-import SearchResultsPage from '../src/HomeStore/SearchResultsPage ';
 import Category from '../src/HomeStore/Category';
 import CategoryPage from '../src/HomeStore/CategoryPage';
 import ContactUs from './Component/ContactUs';
 import AboutUs1 from './Component/AboutUs1';
 import Done from './Home/Done';
 import Notfound from './Component/Notfound';
+import Categoryage from '../src/HomeStore/CategoryPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -42,6 +42,7 @@ function App() {
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/category" element={<Category />} />
           <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/categoryp" element={<Categoryage />} />
           <Route path="/details/:id" element={<StadiumDetails />} />
           <Route path="/store" element={<Store />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -49,10 +50,19 @@ function App() {
           <Route path="/category/:categorySlug" element={<CategoryPage />} />
           <Route path="/playgrounds" element={<Playgrounds />} />
 
+
+
+
+
+
+
           {isAuthenticated && (
             <>
-              <Route path="/bookingform" element={<BookingForm />} />
-              <Route path="/paymentform" element={<PaymentForm />} />
+              <Route path="/playgrounds" element={<Playgrounds />} />
+              {/* <Route path="/bookingform" element={<BookingForm />} /> */}
+              <Route path="/bookingform/:id" element={<BookingForm />} />
+
+              <Route path="/Payment" element={<PaymentForm />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/price" element={<Price />} />
               <Route path="/addformplay" element={<Addformplay />} />
