@@ -26,7 +26,7 @@ const Profile = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab === 'formbooking') {
+    if (tab === 'YourBooking') {
       fetchUserBookings();
     }
   };
@@ -200,7 +200,7 @@ const Profile = () => {
   }, []); 
 
   useEffect(() => {
-    axios.get('http://example.com/api/wishlist')
+    axios.get('http://localhost:3010/cart')
       .then(response => {
         setWishlistData(response.data);
       })
