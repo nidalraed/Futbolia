@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
@@ -27,20 +28,16 @@ function Login() {
       if (response.status === 200 || response.status === 201) {
         const token = response.data.token;
         Cookies.set('authToken', token);
-  
-        Swal.fire({
-          position: 'top',
-          icon: 'success',
-          title: 'Login successful',
-          showConfirmButton: false,
-          timer: 1500,
-        });
+
 
 localStorage.setItem('isLoggedIn', 'true');
 
-  
+
         navigate('/');
-      }
+      toast.success('Login successfully', {
+  autoClose: 1700,
+  position: 'top-center',
+});}
     } catch (error) {
       console.error('Login error:', error); // Log the error to the console
       if (error.response && error.response.status === 401) {
@@ -111,6 +108,10 @@ localStorage.setItem('isLoggedIn', 'true');
           >
             Sign In
           </button> 
+          <div className="flex flex-col w-full mt-9">
+  <div className="divider divider-neutral">OR</div>
+</div>
+
           <button class="bg-white flex mt-10 items-center text-emerald-700 dark:text-gray-300 justify-center gap-x-3 text-sm sm:text-base  dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-800 rounded-lg hover:bg-gray-100 duration-300 transition-colors border px-8 py-2 w-[100%]">
         <svg class="w-5 h-5 sm:h-6 sm:w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_3033_94454)">
@@ -126,6 +127,7 @@ localStorage.setItem('isLoggedIn', 'true');
             </defs>
         </svg>
 
+
         <span>Sign in with Google</span>
     </button>
           {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -140,6 +142,7 @@ localStorage.setItem('isLoggedIn', 'true');
           </p>
         </div>
       </div>
+      <ToastContainer/>
     </div>
   );
 }

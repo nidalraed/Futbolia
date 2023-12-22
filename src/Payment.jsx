@@ -7,21 +7,15 @@ const stripePromise = loadStripe('pk_test_51OGgPBGQpG0LBUoZNw8FNO2sAJUviOz5AjLfz
 const Payment = () => {
   return (
     <div className="product">
-    {/* <img
-      src="https://images.pexels.com/photos/18105/pexels-photo.jpg?auto=compress"
-      alt="laptop"
-      style={{ width: "100%", height: "auto" }}
-    /> */}
+
     <div>
 
 
         <Elements stripe={stripePromise}>
         <ElementsConsumer>
+  {({ stripe, elements }) => <CheckoutForm stripe={stripe} elements={elements} />}
+</ElementsConsumer>
 
-      {({ stripe, elements }) => (
-        <CheckoutForm stripe={stripe} elements={elements} />
-      )}
-    </ElementsConsumer>
       </Elements>
 
     </div>

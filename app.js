@@ -1248,9 +1248,9 @@ app.get('/user-count', authenticateAdminToken, async (req, res) => {
 
 app.get('/allusers', authenticateAdminToken, async (req, res) => {
   try {
-    const { page = 1, pageSize = 20 } = req.query;
-    const offset = (page - 1) * pageSize;
-    const result = await pool.query('SELECT user_id, full_name, email, user_role FROM users WHERE is_deleted = false LIMIT $1 OFFSET $2', [pageSize, offset]);
+    const result = await pool.query(
+      'SELECT user_id, full_name, email, user_role FROM users WHERE is_deleted = false ORDER BY user_id'
+    );
 
     res.json({ message: 'Users with "false" status retrieved successfully', users: result.rows });
   } catch (error) {
@@ -1258,6 +1258,7 @@ app.get('/allusers', authenticateAdminToken, async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 
 
 
@@ -1429,52 +1430,52 @@ app.post('/book-stadium', authenticateToken, async (req, res) => {
 
 //   ///////////////////////////////////////////STAD/////////////////////////////////////////////////////////////////
   // بوست لإضافة ملعب
-  app.post('/add-stadium', authenticateToken, upload.array('images_url', 5), async (req, res) => {
-    const { name, city, location, size, hourly_rate, description, phone, start_time, end_time } = req.body;
-    const { user_id } = req.user;
+//   app.post('/add-stadium', authenticateToken, upload.array('images_url', 5), async (req, res) => {
+//     const { name, city, location, size, hourly_rate, description, phone, start_time, end_time } = req.body;
+//     const { user_id } = req.user;
 
-    try {
-        // التحقق من عدم تكرار اسم الملعب
-        const existingStadium = await pool.query('SELECT * FROM stadiums WHERE name = $1', [name]);
+//     try {
+//         // التحقق من عدم تكرار اسم الملعب
+//         const existingStadium = await pool.query('SELECT * FROM stadiums WHERE name = $1', [name]);
 
-        if (existingStadium.rows.length > 0) {
-            return res.status(400).json({ message: 'Stadium name already exists' });
-        }
+//         if (existingStadium.rows.length > 0) {
+//             return res.status(400).json({ message: 'Stadium name already exists' });
+//         }
 
-        let formattedUrls = [];
+//         let formattedUrls = [];
 
-        if (req.files && req.files.length > 0) {
-            const storageRef = ref(storage, 'stadium-images');
+//         if (req.files && req.files.length > 0) {
+//             const storageRef = ref(storage, 'stadium-images');
 
-            // Upload each image to Firebase Storage
-            for (const file of req.files) {
-                try {
-                    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-                    const fileExtension = path.extname(file.originalname);
-                    const fileName = `image-${uniqueSuffix}${fileExtension}`;
-                    const fileRef = ref(storageRef, fileName);
-                    await uploadBytes(fileRef, file.buffer);
+//             // Upload each image to Firebase Storage
+//             for (const file of req.files) {
+//                 try {
+//                     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//                     const fileExtension = path.extname(file.originalname);
+//                     const fileName = `image-${uniqueSuffix}${fileExtension}`;
+//                     const fileRef = ref(storageRef, fileName);
+//                     await uploadBytes(fileRef, file.buffer);
 
-                    const downloadURL = await getDownloadURL(fileRef);
-                    formattedUrls.push(downloadURL);
-                } catch (error) {
-                    console.error('Error uploading image to Firebase Storage:', error);
-                    return res.status(500).json({ message: 'Error uploading image to Firebase Storage' });
-                }
-            }
-        }
+//                     const downloadURL = await getDownloadURL(fileRef);
+//                     formattedUrls.push(downloadURL);
+//                 } catch (error) {
+//                     console.error('Error uploading image to Firebase Storage:', error);
+//                     return res.status(500).json({ message: 'Error uploading image to Firebase Storage' });
+//                 }
+//             }
+//         }
 
-        const result = await pool.query(
-          'INSERT INTO stadiums (name, city, location, size, hourly_rate, description, owner_id, approval_status, images_url, phone, start_time, end_time, deleted) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, false) RETURNING *',
-          [name, city, location, size, hourly_rate, description, user_id, 'pending', formattedUrls, phone, start_time, end_time]
-        );      
+//         const result = await pool.query(
+//           'INSERT INTO stadiums (name, city, location, size, hourly_rate, description, owner_id, approval_status, images_url, phone, start_time, end_time, deleted) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, false) RETURNING *',
+//           [name, city, location, size, hourly_rate, description, user_id, 'pending', formattedUrls, phone, start_time, end_time]
+//         );      
 
-        res.json({ message: 'Stadium request added successfully', stadium: result.rows[0] });
-    } catch (error) {
-        console.error('Error executing query', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+//         res.json({ message: 'Stadium request added successfully', stadium: result.rows[0] });
+//     } catch (error) {
+//         console.error('Error executing query', error);
+//         res.status(500).json({ message: 'Internal server error' });
+//     }
+// });
 
 
 app.get('/stadiums', async (req, res) => {
@@ -1519,8 +1520,8 @@ app.post('/stadiums', async (req, res) => {
     start_time,
     end_time,
     description,
-    // payment
   } = req.body;
+  
 
   try {
     const result = await pool.query(
@@ -1838,33 +1839,7 @@ app.post('/add-review', authenticateToken, async (req, res) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-app.post('/contact', async (req, res) => {
-  const { full_name, email, message } = req.body;
 
-  try {
-    const mailOptions = {
-        from: `"${full_name}" <hma91109@gmail.com>`,
-        to: email,
-      subject: `replay 
-      `,
-      text: `thankyou`
-    };
-    const result = await pool.query('INSERT INTO public.contacts (full_name, email, message) VALUES ($1, $2, $3) RETURNING *', [full_name, email, message]);
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.error('Error sending email', error);
-        res.status(500).json({ message: 'Failed to send email' });
-      } else {
-        console.log('Email sent: ' + info.response);
-        res.json({ message: 'Email sent successfully' });
-      }
-    });
-  } catch (error) {
-    console.error('Error processing contact form', error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
 
 // تحديث نقطة النهاية لجلب رسائل الاتصال للأدمن
 app.get('/admin-contact', authenticateAdminToken, async (req, res) => {
@@ -1881,42 +1856,54 @@ app.get('/admin-contact', authenticateAdminToken, async (req, res) => {
 
 
 
-// Endpoint to handle contact form submissions
+// Configure Nodemailer transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'hma91109@gmail.com',
-    pass: 'kjnhebktzoqaqhgs'
-  }
+    user: 'nedalraed55@gmail.com',
+    pass: 'rzwykxqmyisuvwuc',
+  },
 });
 
-// نقطة نهاية لمعالجة نموذج الاتصال
+app.use(express.json());
+
+// Endpoint for handling contact form submissions
 app.post('/contact', async (req, res) => {
   const { name, email, message } = req.body;
 
   try {
+    // Log the received data
+    console.log('Received contact form submission:', { name, email, message });
+
+    // Validate the form data if needed
+
+    // Configure email options
     const mailOptions = {
-      from: "",
+      from: 'nedalraed55@gmail.com',
       to: email,
-      subject: `replay`,
-      text: `thankyou`
+      subject: 'Subject for the email',
+      text: 'Thank you for your message',
     };
 
+    // Send the email
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.error('Error sending email', error);
-        res.status(500).json({ message: 'Failed to send email' });
+
+        // Log the error on the server
+        res.status(500).json({ message: 'Failed to send email', error: error.message });
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log('Email sent:', info.response);
         res.json({ message: 'Email sent successfully' });
       }
     });
   } catch (error) {
     console.error('Error processing contact form', error);
-    res.status(500).json({ message: 'Internal server error' });
+
+    // Log the error on the server
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
-
 
 
 
@@ -2122,26 +2109,7 @@ app.post("/Payment", cors(), async (req, res) => {
     });
   }
 });
-// app.post('/Payment', async (req, res) => {
-//   const { amount, id } = req.body;
 
-//   try {
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency: 'usd',
-//       description: 'Example Payment',
-//       payment_method: id,
-//       confirm: true,
-//     });
-
-//     console.log('PaymentIntent:', paymentIntent);
-
-//     return res.status(200).json({ success: true });
-//   } catch (error) {
-//     console.error('Error:', error);
-//     return res.status(500).json({ success: false, error: error.message });
-//   }
-// });
 /////////////////////////////////////////////////////////////////////////////
 app.listen(2000, () => {
   console.log("server running at http://localhost:2000");

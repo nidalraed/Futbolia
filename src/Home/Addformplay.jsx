@@ -599,6 +599,7 @@ const AddFormPlay = () => {
     images_url: [], // Corrected name
   });
   
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -620,7 +621,7 @@ const AddFormPlay = () => {
     });
 
     try {
-      const response = await axios.post('http://localhost:2000/add-stadium', formDataToSend, {
+      const response = await axios.post('http://localhost:2000/stadiums', formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',

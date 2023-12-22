@@ -10,7 +10,7 @@ const getAuthToken = () => {
   return token;
 };
 
-const Profile = () => {
+const SuperProfile = () => {
   const [userId, setUserId] = useState(1);
   const [full_name, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -264,6 +264,17 @@ const Profile = () => {
       // Handle error (display error message, etc.)
     }
   };
+
+  const handlePlaygroundImagesChange = (e) => {
+    if (e.target.files.length > 0) {
+      const selectedImages = Array.from(e.target.files);
+      setPlaygroundData({
+        ...playgroundData,
+        images: selectedImages,
+      });
+    }
+  };
+  
   return (
       <div>
         <div className="sm mt-24 bg-emerald-500 h-52 w-full flex items-center justify-center relative ">
@@ -433,51 +444,9 @@ const Profile = () => {
           ))}
         </div>
       )}
-
-{/*       
-{activeTab === 'EditMyPlayground' && (
-        <div className="flex justify-center mt-20 px-8">
-          <form className="max-w-2xl">
-            <div className="border shadow rounded-lg p-6 bg-white dark:bg-emerald-600">
-              <h2 className="text-2xl font-semibold text-emerald-600 dark:text-emerald-300 mb-4">Edit Playground</h2>
-
-              <div className="mb-4">
-                <label className="text-emerald-600 dark:text-emerald-400 block">Playground Name</label>
-                <input
-                  className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
-                  type="text"
-                  value={playgroundData.name}
-                  onChange={(e) => setPlaygroundData({ ...playgroundData, name: e.target.value })}
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="text-emerald-600 dark:text-emerald-400 block">Playground Price</label>
-                <input
-                  className="w-full py-2 px-3 border border-emerald-300 rounded-md focus:outline-none focus:border-emerald-500"
-                  type="text"
-                  value={playgroundData.price}
-                  onChange={(e) => setPlaygroundData({ ...playgroundData, price: e.target.value })}
-                />
-              </div>
-
-
-              <div className="flex justify-end">
-                <button
-                  onClick={handleSavePlaygroundChanges}
-                  className="py-2 px-4 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 focus:outline-none focus:ring focus:border-emerald-300"
-                  type="button"
-                >
-                  Save Playground Changes
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      )} */}
       {activeTab === 'EditMyPlayground' && (
     <div className="flex justify-center mt-20 px-8">
-      <form className="max-w-2xl">
+      <form className="w-[70%]">
         <div className="border shadow rounded-lg p-6 bg-white dark:bg-emerald-600">
           <h2 className="text-2xl font-semibold text-emerald-600 dark:text-emerald-300 mb-4">Edit Playground</h2>
 

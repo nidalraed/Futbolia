@@ -39,13 +39,13 @@ function Footer() {
               </a>
             </li>
             <li className="mb-2 leading-6">
-              <a
-                href="/"
+              <Link
+                to="/whyus"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
                 Why us?{" "}
-              </a>
+              </Link>
             </li>
             <li className="mb-2 leading-6">
               <a
@@ -97,13 +97,13 @@ function Footer() {
               </a>
             </li>
             <li className="mb-2 leading-6">
-              <a
-                href="/"
+              <Link
+                to="/faqs"
                 className="transition-colors duration-300 hover:text-emerald-100 focus:text-emerald-50"
               >
                 {" "}
                 FAQ's{" "}
-              </a>
+              </Link>
             </li>
             <li className="mb-2 leading-6">
               <a

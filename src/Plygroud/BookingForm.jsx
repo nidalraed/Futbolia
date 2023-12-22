@@ -18,6 +18,7 @@ const BookingForm = () => {
     payment_method: '',
   });
 
+
   const handleChange = (e) => {
     setFormData({
       ...formData,

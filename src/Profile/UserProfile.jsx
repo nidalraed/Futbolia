@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const getAuthToken = () => {
   let token = localStorage.getItem('authToken');
@@ -23,6 +26,7 @@ const Profile = () => {
   const [userBookings, setUserBookings] = useState([]);
   const [cancelable, setCancelable] = useState(true);
   const [cancellationExpired, setCancellationExpired] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(null);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -127,7 +131,10 @@ const Profile = () => {
         pic_user: null,
       });
 
-      alert('Changes saved successfully');
+      toast.success('Changes saved successfully', {
+        autoClose: 1700,
+        position: 'top-center',
+      });
       console.log('Response data:', response.data);
     } catch (error) {
       console.error('Error saving changes: ', error);
@@ -164,7 +171,10 @@ const Profile = () => {
       });
 
       setUserImage(response.data.imageUrl);
-      alert('Image changes saved successfully');
+      toast.success('Changes saved successfully', {
+        autoClose: 1700,
+        position: 'top-center',
+      });
     } catch (error) {
       console.error('Error saving image changes: ', error);
     }
@@ -179,13 +189,11 @@ const Profile = () => {
         return;
       }
 
-      // إرسال طلب لإلغاء الحجز باستخدام bookingId
 
-      // تحديث الحالة بعد إلغاء الحجز بنجاح
       setCancelable(false);
       setCancellationExpired(true);
 
-      alert('Booking canceled successfully');
+      toast.success('Changes saved successfully');
     } catch (error) {
       console.error('Error canceling booking: ', error);
     }
@@ -372,12 +380,14 @@ const Profile = () => {
                     <td className="py-2 px-4">
                       {cancelable && !cancellationExpired && (
                         <button
-                          onClick={() => handleCancelBooking(booking.bookingId)}
-                          className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
-                          type="button"
-                        >
-                          Cancel Booking
-                        </button>
+  onClick={() => handleCancelBooking(booking.bookingId)}
+  className={`py-2 px-4 ${timeRemaining <= 0 ? 'bg-gray-500' : 'bg-red-500'} text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300`}
+  type="button"
+  disabled={timeRemaining <= 0}
+>
+  {timeRemaining <= 0 ? 'Cancellation Expired' : 'Cancel Booking'}
+</button>
+
                       )}
                       {cancellationExpired && (
                         <span className="text-green-500">Booking confirmed</span>
@@ -393,6 +403,7 @@ const Profile = () => {
         )}
       </section>
     )}
+        <ToastContainer/>
   </div>
 );
 };

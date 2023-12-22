@@ -24,6 +24,10 @@ import AboutUs1 from './Component/AboutUs1';
 import Done from './Home/Done';
 import Notfound from './Component/Notfound';
 import Categoryage from '../src/HomeStore/CategoryPage';
+import SuperProfile from './Profile/SuperUsers';
+import FAQs from './Component/FAQs';
+import Whyus from './Component/Whyus';
+import Category1 from './HomeStore/Category1';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
@@ -49,19 +53,20 @@ function App() {
           <Route path="/academies" element={<Academies />} />
           <Route path="/category/:categorySlug" element={<CategoryPage />} />
           <Route path="/playgrounds" element={<Playgrounds />} />
+          <Route path="/faqs" element={<FAQs />} />
+          <Route path="/whyus" element={<Whyus />} />
+          <Route path="/category1" element={<Category1 />} />
 
 
 
-
-
-
+          
 
           {isAuthenticated && (
             <>
               <Route path="/playgrounds" element={<Playgrounds />} />
+              <Route path="/profile1" element={<SuperProfile />} />
               {/* <Route path="/bookingform" element={<BookingForm />} /> */}
               <Route path="/bookingform/:id" element={<BookingForm />} />
-
               <Route path="/Payment" element={<PaymentForm />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/price" element={<Price />} />

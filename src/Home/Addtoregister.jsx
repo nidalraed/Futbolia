@@ -12,11 +12,11 @@ function Addtoregister() {
           <div class="mt-10">
             <Link to="/addformplay">
             <button type="button"
-              class="px-8 py-2 text-base tracking-wider font-semibold outline-none border border-white bg-white text-emerald-500 hover:bg-transparent hover:text-white transition-all duration-300">Resgister Your playground</button></Link>
+              class="px-8 py-2 text-base tracking-wider font-semibold outline-none border border-white bg-white text-emerald-500 hover:bg-transparent hover:text-white transition-all duration-300">Resgister Your stadium</button></Link>
           </div>
         </div>
         <div class="md:text-right ">
-          <img src="https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Premium Benefits" class="object-cover rounded-full" />
+          <img src="https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Premium Benefits" class="object-cover rounded-[10%]" />
         </div>
       </div>
     </div>

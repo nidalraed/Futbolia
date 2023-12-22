@@ -60,29 +60,30 @@ const ResponsiveTable = styled(Table)`
 
 const ShoppingCart = ({ onAddToCart }) => {
   const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [delivery, setDelivery] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If products are passed via location state, add them to the cart
     if (location.state && location.state.products) {
       onAddToCart(location.state.products);
     }
 
+    // Fetch cart data from the server
     fetch('http://localhost:3010/cart')
       .then((response) => response.json())
       .then((data) => {
+        // Initialize the cart with quantity property
         setCart(data.map((product) => ({ ...product, quantity: 1 })));
-        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
-        setLoading(false);
       });
   }, [location.state, onAddToCart]);
 
   const updateQuantity = (productId, newQuantity) => {
+    // Update quantity for a specific product in the cart
     setCart((prevCart) =>
       prevCart.map((product) =>
         product.id === productId ? { ...product, quantity: newQuantity } : product
@@ -91,10 +92,12 @@ const ShoppingCart = ({ onAddToCart }) => {
   };
 
   const removeProduct = (productId) => {
+    // Remove a product from the cart
     setCart((prevCart) => prevCart.filter((product) => product.id !== productId));
   };
 
   const calculateTotal = () => {
+    // Calculate the total amount, considering the quantity and delivery
     let total = cart.reduce((acc, product) => {
       const productPrice = (product && product.price) || 0;
       const productQuantity = (product && product.quantity) || 0;
@@ -105,22 +108,15 @@ const ShoppingCart = ({ onAddToCart }) => {
       total += 10;
     }
 
-    if (!isNaN(total)) {
-      return total.toFixed(2);
-    } else {
-      return '0.00';
-    }
+    return total.toFixed(2);
   };
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
 
   return (
     <Container>
       <ShoppingCartContainer>
         <h1 className="text-2xl font-semibold mb-4 mt-32">Shopping Cart</h1>
         <div className="flex flex-col md:flex-row gap-4">
+          {/* Cart Table */}
           <div className="md:w-3/4">
             <div className="bg-white rounded-lg shadow-md p-6 mb-4">
               <ResponsiveTable>
@@ -136,6 +132,7 @@ const ShoppingCart = ({ onAddToCart }) => {
                 <tbody>
                   {cart.map((product) => (
                     <tr key={product.id}>
+                      {/* Product Details */}
                       <td className="py-4">
                         <div className="flex items-center">
                           <img
@@ -146,7 +143,9 @@ const ShoppingCart = ({ onAddToCart }) => {
                           <span className="font-semibold">{product.title}</span>
                         </div>
                       </td>
+                      {/* Price */}
                       <td className="py-4">${product.price}</td>
+                      {/* Quantity */}
                       <td className="py-4">
                         <div className="flex items-center">
                           <Button
@@ -164,7 +163,9 @@ const ShoppingCart = ({ onAddToCart }) => {
                           </Button>
                         </div>
                       </td>
+                      {/* Total */}
                       <td className="py-4">${(product.price * product.quantity).toFixed(2)}</td>
+                      {/* Remove Button */}
                       <td className="py-4">
                         <Button
                           className="bg-emerald-500 text-white py-2 px-4 rounded-md mr-2"
@@ -179,26 +180,32 @@ const ShoppingCart = ({ onAddToCart }) => {
               </ResponsiveTable>
             </div>
           </div>
+          {/* Order Summary */}
           <div className="md:w-1/4">
             <SummaryContainer>
               <h2 className="text-lg font-semibold mb-4">Summary</h2>
+              {/* Subtotal */}
               <div className="flex justify-between mb-2">
                 <span>Subtotal</span>
                 <span>${calculateTotal()}</span>
               </div>
+              {/* Taxes */}
               <div className="flex justify-between mb-2">
                 <span>Taxes</span>
                 <span>$1.99</span>
               </div>
+              {/* Shipping */}
               <div className="flex justify-between mb-2">
                 <span>Shipping</span>
                 <span>${delivery ? '10.00' : '0.00'}</span>
               </div>
+              {/* Total Amount */}
               <hr className="my-2" />
               <div className="flex justify-between mb-2">
                 <span className="font-semibold">Total</span>
                 <span className="font-semibold">${(parseFloat(calculateTotal()) + 1.99).toFixed(2)}</span>
               </div>
+              {/* Delivery Checkbox */}
               <CheckboxContainer>
                 <input
                   type="checkbox"
@@ -208,16 +215,17 @@ const ShoppingCart = ({ onAddToCart }) => {
                 />
                 <CheckboxLabel htmlFor="deliveryCheckbox">Delivery</CheckboxLabel>
               </CheckboxContainer>
+              {/* Checkout Button */}
               <Button
-                className="bg-emerald-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
-                onClick={() =>
-                  navigate('/Payment', {
-                    state: { total: calculateTotal(), cart: cart },
-                  })
-                }
-              >
-                Checkout
-              </Button>
+          className="bg-emerald-500 text-white py-2 px-4 rounded-lg mt-4 w-full"
+          onClick={() =>
+            navigate('/Payment', {
+              state: { total: calculateTotal(), cart: cart },
+            })
+          }
+        >
+          Checkout
+        </Button>
             </SummaryContainer>
           </div>
         </div>

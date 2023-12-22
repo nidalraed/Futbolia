@@ -84,7 +84,7 @@ function Cardsground() {
   return (
     <div
       className="min-h-screen bg-white py-6 flex flex-col justify-center sm:py-2 mb-[-20] mt-32"
-      style={{ background: 'url("https://t4.ftcdn.net/jpg/04/89/79/95/360_F_489799508_r69qrYCqaatNgaYF9vM7owSAz75rDPil.jpg")' }}
+      style={{ background: 'url("https://img.freepik.com/premium-photo/soccer-ball-with-smoke-dark-background_972628-201.jpg?ga=GA1.1.848883340.1702820322&semt=ais_ai_generated")', backgroundRepeat:"no-repeat",backgroundSize:" cover"}}
     >     <div className="py-6 flex flex-col justify-center sm:py-2 mb-[-20] mt-32">
         <div className="py-3 sm:max-w-8xl sm:mx-auto">
           <div className="relative inline-flex mb-10">

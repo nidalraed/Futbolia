@@ -77,9 +77,9 @@ const Header1 = ({ cartCount, heartCount }) => {
             <div className={`md:flex items-center ${isOpen ? 'block' : 'hidden'}`}>
             <div className="flex flex-col mt-2 md:flex-row md:mt-0 md:mx-1">
               <Link to="/" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">Home</Link>
-              <Link to="/blog" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">Category</Link>
+              <Link to="/category1" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">Category</Link>
               <Link to="/components" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">About us</Link>
-              <Link to="/courses" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">Contact us</Link>
+              <Link to="/contactus" className="my-1 font-bold text-gray-700 leading-5 hover:text-emerald-600 md:mx-4 md:my-0">Contact us</Link>
             </div>
           </div>
 

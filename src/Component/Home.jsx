@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Hero from './Hero'
-import Aboutus from '../Home/Aboutus'
 import WordGro from '../Home/WordGro'
 import Cardsground from '../Home/Cardsground'
 import Stor from '../Home/Stor'
