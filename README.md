@@ -6,12 +6,11 @@
 *-*Nidal Raed Front-End
 *-*Maha Back-End
 
-### 1. [Developer Name 1]
+### 1. [Nidal Raed]
 - [Email]
 - [https://github.com/nidalraed/Futbolia]
 
-### 2. [Developer Name 2]
-- [Email]
+### 2. Orgnazation github]
 - [https://github.com/Footboolia-Project/Final-verion-Footboolia]
 
 ## Project Overview:
